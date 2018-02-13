@@ -14,6 +14,7 @@ import torch.backends.cudnn
 from unet_models import UNet11, Loss
 import utils
 import cv2
+import jpeg4py
 
 
 class BinaryDataset(Dataset):
@@ -26,7 +27,7 @@ class BinaryDataset(Dataset):
 
     def __getitem__(self, idx):
         img = load_image(str(self.file_names[idx]))
-        mask = load_mask(str(self.file_names[idx]).replace('images', 'binary_masks'))
+        mask = load_mask(str(self.file_names[idx]).replace('images', 'binary_masks').replace('jpg', 'png'))
 
         if self.to_augment:
             img, mask = augment(img, mask)
@@ -85,8 +86,7 @@ def randomHueSaturationValue(image, hue_shift_limit=(-180, 180),
 
 
 def load_image(path):
-    img = cv2.imread(str(path))
-    return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    return jpeg4py.JPEG(str(path)).decode()
 
 
 def load_mask(path):

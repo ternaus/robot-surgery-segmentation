@@ -31,7 +31,7 @@ for instrument_index in range(1, 9):
         old_h, old_w, _ = img.shape
 
         img = img[h_start: h_start + height, w_start: w_start + width]
-        cv2.imwrite(str(cropped_train_path / instrument_folder / 'images' / file_name.name), img)
+        cv2.imwrite(str(cropped_train_path / instrument_folder / 'images' / (file_name.stem + '.jpg')), img, [cv2.IMWRITE_JPEG_QUALITY, 100])
 
         mask = np.zeros((old_h, old_w))
 
