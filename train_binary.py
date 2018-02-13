@@ -44,12 +44,11 @@ def augment(img, mask):
         img = np.flipud(img)
         mask = np.flipud(mask)
 
-    if np.random.random() < 0.5:
-        if np.random.random() < 0.5:
-            img = randomHueSaturationValue(img,
-                                           hue_shift_limit=(-50, 50),
-                                           sat_shift_limit=(-5, 5),
-                                           val_shift_limit=(-15, 15))
+    # if np.random.random() < 0.5:
+    #     img = randomHueSaturationValue(img,
+    #                                    hue_shift_limit=(-50, 50),
+    #                                    sat_shift_limit=(-5, 5),
+    #                                    val_shift_limit=(-15, 15))
 
     return img.copy(), mask.copy()
 
