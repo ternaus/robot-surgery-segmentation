@@ -162,7 +162,7 @@ def main():
     root.mkdir(exist_ok=True, parents=True)
 
     # model = UNet11(pretrained='vgg')
-    model = LinkNet34()
+    model = LinkNet34(num_classes=1)
 
     if torch.cuda.is_available():
         if args.device_ids:
