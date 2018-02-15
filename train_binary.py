@@ -12,6 +12,7 @@ from torch.utils.data import DataLoader, Dataset
 import torch.backends.cudnn
 
 from unet_models import UNet11, Loss
+from linknet import LinkNet34
 import utils
 import cv2
 import jpeg4py
@@ -160,7 +161,8 @@ def main():
     root = Path(args.root)
     root.mkdir(exist_ok=True, parents=True)
 
-    model = UNet11(pretrained='vgg')
+    # model = UNet11(pretrained='vgg')
+    model = LinkNet34()
 
     if torch.cuda.is_available():
         if args.device_ids:
