@@ -1,7 +1,7 @@
 # robots
 
 Inline-style: 
-![alt text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset4/binary.gif")
+![alt text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset4/binary.gif)
 
 Reference-style: 
 ![alt text][logo]
