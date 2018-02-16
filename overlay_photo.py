@@ -52,26 +52,20 @@ for MODE in MODES:
                 if MODE == "BINARY":
                     overlay[np.all(ovr > 0, axis=-1)] = binary_label
                 elif MODE == "TYPE":
-                    # key = next(s for s in type_labels if s in l_d)
-                    # overlay[np.all(ovr > 0, axis=-1)] = type_labels[key]
                     overlay[np.all(ovr > 0, axis=-1)] = v
                 elif MODE == "PARTS":
                     for label_code in part_labels:
                         overlay[np.all(ovr == label_code, axis=-1)] = part_labels[label_code]
 
-        if SCALE != 1:
-            overlay = cv2.resize(overlay, None, fx=SCALE, fy=SCALE, interpolation=cv2.INTER_CUBIC)
-            image = cv2.resize(image, None, fx=SCALE, fy=SCALE, interpolation=cv2.INTER_CUBIC)
         mask = np.ones(overlay.shape[:-1] + (1,)) * ALPHA
         mask[np.all(overlay == 0, axis=-1)] = 0
         out = image * (1 - mask) + overlay * mask
         out = out.astype(np.uint8)
+        if SCALE != 1:
+            out = cv2.resize(out, None, fx=SCALE, fy=SCALE, interpolation=cv2.INTER_CUBIC)
         cv2.imwrite(join(OUTPUT_DIR, FRAME), out)
 
         # cv2.putText(overlay, "PyImageSearch: alpha={}".format(alpha),
         #     (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255), 3)
-
-        # show the output image
         # cv2.imshow("Output", out)
         # cv2.waitKey(0)
-
