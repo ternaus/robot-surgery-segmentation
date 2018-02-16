@@ -1,5 +1,25 @@
 # robots
 
+```
+├── input
+│   ├── test
+│   │   ├── instrument_dataset_1
+│   │   │   ├── left_frames
+│   │   │   └── right_frames
+│   └── train
+│       ├── instrument_dataset_1
+│       │   ├── ground_truth
+│       │   │   ├── Left_Prograsp_Forceps_labels
+│       │   │   ├── Maryland_Bipolar_Forceps_labels
+│       │   │   ├── Other_labels
+│       │   │   └── Right_Prograsp_Forceps_labels
+│       │   ├── left_frames
+│       │   └── right_frames
+├── notebooks
+├── src
+└── predictions
+```
+
 
 [endovissub2017](https://endovissub2017-roboticinstrumentsegmentation.grand-challenge.org/)
 
