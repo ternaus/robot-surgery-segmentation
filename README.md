@@ -11,20 +11,28 @@
 
 ### Binary Segmentation
 
-| Model            |Mean IOU   | Mean pix. accuracy | Inference time (512x512 px. image) | Model Download Link |
-|------------------|-----------|--------------------|------------------------------------|---------------------|
-| U-Net            | 96.0      | in prog.           | 28 ms.         | [Dropbox](https://www.dropbox.com/)           |
-| Ternaus-Net      | in prog.  | in prog.           | 50 ms.         | in prog.            |
-| Link-Net         | in prog.  | in prog.           | 50 ms.         | in prog.            |
-| PSP-Net          | in prog.  | in prog.           | 50 ms.         | in prog.            |
+| Model            |Mean IOU   | Mean pix. accuracy | Inference time (512x512) | Model Download Link |
+|------------------|-----------|--------------------|--------------------------|---------------------|
+| U-Net            | 96.0      | in prog.           | 28 ms.                   | [Dropbox](https://www.dropbox.com/)|
+| Ternaus-Net      | in prog.  | in prog.           | 50 ms.                   | in prog.            |
+| Link-Net         | in prog.  | in prog.           | 50 ms.                   | in prog.            |
+| PSP-Net          | in prog.  | in prog.           | 50 ms.                   | in prog.            |
 
 
+### Multi-class Segmentation (part of instruments)
 
-### Multi-class Segmentation
+| Model            |Mean IOU   | Mean pix. accuracy | Inference time (512x512) | Model Download Link |
+|------------------|-----------|--------------------|--------------------------|---------------------|
+| U-Net            | 96.0      | in prog.           | 28 ms.                   | [Dropbox](https://www.dropbox.com/)|
+| Ternaus-Net      | in prog.  | in prog.           | 50 ms.                   | in prog.            |
+| Link-Net         | in prog.  | in prog.           | 50 ms.                   | in prog.            |
+| PSP-Net          | in prog.  | in prog.           | 50 ms.                   | in prog.            |
 
-| Model            |Mean IOU   | Mean pix. accuracy | Inference time (512x512 px. image) | Model Download Link |
-|------------------|-----------|--------------------|------------------------------------|---------------------|
-| U-Net            | 96.0      | in prog.           | 28 ms.         | [Dropbox](https://www.dropbox.com/)           |
-| Ternaus-Net      | in prog.  | in prog.           | 50 ms.         | in prog.            |
-| Link-Net         | in prog.  | in prog.           | 50 ms.         | in prog.            |
-| PSP-Net          | in prog.  | in prog.           | 50 ms.         | in prog.            |
+### Multi-class Segmentation (different instryments)
+
+| Model            |Mean IOU   | Mean pix. accuracy | Inference time (512x512) | Model Download Link |
+|------------------|-----------|--------------------|--------------------------|---------------------|
+| U-Net            | 96.0      | in prog.           | 28 ms.                   | [Dropbox](https://www.dropbox.com/)|
+| Ternaus-Net      | in prog.  | in prog.           | 50 ms.                   | in prog.            |
+| Link-Net         | in prog.  | in prog.           | 50 ms.                   | in prog.            |
+| PSP-Net          | in prog.  | in prog.           | 50 ms.                   | in prog.            |
