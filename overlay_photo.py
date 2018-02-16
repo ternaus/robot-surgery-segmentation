@@ -42,13 +42,11 @@ for MODE in MODES:
         FRAME = "frame{:03d}.png".format(FRAME_NUM)
 
         image = cv2.imread(join(PHOTO_DIR, FRAME))
-        image = image[TOP: BOTTOM + 1, LEFT: RIGHT + 1]
-
         overlay = np.zeros_like(image)
+
         if MODE != "ORIGINAL":
             for l_d, (_, v) in zip(LABEL_DIRS, type_labels.items()):
                 ovr = cv2.imread(join(GROUND_TRUTH_DIR, l_d, FRAME))
-                ovr = ovr[TOP: BOTTOM + 1, LEFT: RIGHT + 1]
                 if MODE == "BINARY":
                     overlay[np.all(ovr > 0, axis=-1)] = binary_label
                 elif MODE == "TYPE":
@@ -61,6 +59,7 @@ for MODE in MODES:
         mask[np.all(overlay == 0, axis=-1)] = 0
         out = image * (1 - mask) + overlay * mask
         out = out.astype(np.uint8)
+        out = out[TOP: BOTTOM + 1, LEFT: RIGHT + 1]
         if SCALE != 1:
             out = cv2.resize(out, None, fx=SCALE, fy=SCALE, interpolation=cv2.INTER_CUBIC)
         cv2.imwrite(join(OUTPUT_DIR, FRAME), out)
