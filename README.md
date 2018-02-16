@@ -1,4 +1,5 @@
 # robots
+[endovissub2017](https://endovissub2017-roboticinstrumentsegmentation.grand-challenge.org/)
 The training dataset contatins 8 instrument datasets, while test datasets contains 10 instrument datasets. The whole project tree looks like:
 
 ```
@@ -20,9 +21,7 @@ The training dataset contatins 8 instrument datasets, while test datasets contai
 ├── src
 └── predictions
 ```
-
-
-[endovissub2017](https://endovissub2017-roboticinstrumentsegmentation.grand-challenge.org/)
+the notebooks folder contains Jupyter notebooks that helps us to unilize visually the train and test images. The predictions folder contains weights of several networks
 
 ![Alt Text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset4/original.gif) ![Alt Text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset4/binary.gif)
 
