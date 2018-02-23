@@ -6,7 +6,7 @@ from typing import Dict
 import numpy as np
 import torch
 from torch import nn
-from torch.optim import RMSprop
+from torch.optim import Adam
 from torch.utils.data import DataLoader
 import torch.backends.cudnn as cudnn
 import torch.backends.cudnn
@@ -55,26 +55,6 @@ def get_jaccard(y_true, y_pred):
     union = y_true.sum(dim=-2).sum(dim=-1) + y_pred.sum(dim=-2).sum(dim=-1)
 
     return (intersection / (union - intersection + epsilon)).mean()
-
-
-def get_file_names(fold: int):
-    folds = {0: [1, 3],
-             1: [2, 5],
-             2: [4, 8],
-             3: [6, 7]}
-
-    train_path = Path('data') / 'cropped_train'
-
-    train_file_names = []
-    val_file_names = []
-
-    for instrument_id in range(1, 9):
-        if instrument_id in folds[fold]:
-            val_file_names += list((train_path / ('instrument_dataset_' + str(instrument_id)) / 'images').glob('*'))
-        else:
-            train_file_names += list((train_path / ('instrument_dataset_' + str(instrument_id)) / 'images').glob('*'))
-
-    return train_file_names, val_file_names
 
 
 def main():
@@ -139,7 +119,7 @@ def main():
         json.dumps(vars(args), indent=True, sort_keys=True))
 
     utils.train(
-        init_optimizer=lambda lr: RMSprop(model.parameters(), lr=lr),
+        init_optimizer=lambda lr: Adam(model.parameters(), lr=lr),
         args=args,
         model=model,
         criterion=loss,
