@@ -124,7 +124,7 @@ def main():
     train_transform = DualCompose([
         HorizontalFlip(),
         VerticalFlip(),
-        RandomHueSaturationValue(),
+        ImageOnly(RandomHueSaturationValue()),
         ImageOnly(Normalize())
     ])
 

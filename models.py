@@ -174,6 +174,39 @@ class UNet16(nn.Module):
         return self.final(dec1)
 
 
+class DecoderBlockLinkNet(nn.Module):
+    def __init__(self, in_channels, n_filters):
+        super().__init__()
+
+        # B, C, H, W -> B, C/4, H, W
+        self.conv1 = nn.Conv2d(in_channels, in_channels // 4, 1)
+        self.norm1 = nn.BatchNorm2d(in_channels // 4)
+        self.relu1 = nn.ReLU(inplace=True)
+
+        # B, C/4, H, W -> B, C/4, H, W
+        self.deconv2 = nn.ConvTranspose2d(in_channels // 4, in_channels // 4, 3,
+                                          stride=2, padding=1, output_padding=1)
+        self.norm2 = nn.BatchNorm2d(in_channels // 4)
+        self.relu2 = nn.ReLU(inplace=True)
+
+        # B, C/4, H, W -> B, C, H, W
+        self.conv3 = nn.Conv2d(in_channels // 4, n_filters, 1)
+        self.norm3 = nn.BatchNorm2d(n_filters)
+        self.relu3 = nn.ReLU(inplace=True)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.norm1(x)
+        x = self.relu1(x)
+        x = self.deconv2(x)
+        x = self.norm2(x)
+        x = self.relu2(x)
+        x = self.conv3(x)
+        x = self.norm3(x)
+        x = self.relu3(x)
+        return x
+
+
 class LinkNet34(nn.Module):
     def __init__(self, num_classes, num_channels=3, pretrained=False):
         super().__init__()
@@ -191,10 +224,10 @@ class LinkNet34(nn.Module):
         self.encoder4 = resnet.layer4
 
         # Decoder
-        self.decoder4 = DecoderBlock(filters[3], filters[2])
-        self.decoder3 = DecoderBlock(filters[2], filters[1])
-        self.decoder2 = DecoderBlock(filters[1], filters[0])
-        self.decoder1 = DecoderBlock(filters[0], filters[0])
+        self.decoder4 = DecoderBlockLinkNet(filters[3], filters[2])
+        self.decoder3 = DecoderBlockLinkNet(filters[2], filters[1])
+        self.decoder2 = DecoderBlockLinkNet(filters[1], filters[0])
+        self.decoder1 = DecoderBlockLinkNet(filters[0], filters[0])
 
         # Final Classifier
         self.finaldeconv1 = nn.ConvTranspose2d(filters[0], 32, 3, stride=2)

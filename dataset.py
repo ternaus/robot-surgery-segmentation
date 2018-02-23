@@ -18,10 +18,9 @@ class BinaryDataset(Dataset):
         return len(self.file_names)
 
     def __getitem__(self, idx):
-        img = load_image(str(self.file_names[idx]))
-        mask = load_mask(str(self.file_names[idx]).replace('images', 'binary_masks').replace('jpg', 'png'))
-
-        img, mask = self.transform(img, mask)
+        img_file_name = self.file_names[idx]
+        img = load_image(img_file_name)
+        mask = load_mask(img_file_name)
 
         img, mask = self.transform(img, mask)
 
