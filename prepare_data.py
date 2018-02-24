@@ -14,30 +14,34 @@ train_path = data_path / 'train'
 
 cropped_train_path = data_path / 'cropped_train'
 
+
+original_height, original_width = 1080, 1920
 height, width = 1024, 1280
 h_start, w_start = 28, 320
 
-for instrument_index in range(1, 9):
-    instrument_folder = 'instrument_dataset_' + str(instrument_index)
 
-    (cropped_train_path / instrument_folder / 'images').mkdir(exist_ok=True, parents=True)
-    (cropped_train_path / instrument_folder / 'binary_masks').mkdir(exist_ok=True, parents=True)
+if __name__ == '__main__':
+    for instrument_index in range(1, 9):
+        instrument_folder = 'instrument_dataset_' + str(instrument_index)
 
-    mask_folders = (train_path / instrument_folder / 'ground_truth').glob('*')
-    mask_folders = [x for x in mask_folders if 'Other' not in str(mask_folders)]
+        (cropped_train_path / instrument_folder / 'images').mkdir(exist_ok=True, parents=True)
+        (cropped_train_path / instrument_folder / 'binary_masks').mkdir(exist_ok=True, parents=True)
 
-    for file_name in tqdm(list((train_path / instrument_folder / 'left_frames').glob('*'))):
-        img = cv2.imread(str(file_name))
-        old_h, old_w, _ = img.shape
+        mask_folders = (train_path / instrument_folder / 'ground_truth').glob('*')
+        mask_folders = [x for x in mask_folders if 'Other' not in str(mask_folders)]
 
-        img = img[h_start: h_start + height, w_start: w_start + width]
-        cv2.imwrite(str(cropped_train_path / instrument_folder / 'images' / (file_name.stem + '.jpg')), img, [cv2.IMWRITE_JPEG_QUALITY, 100])
+        for file_name in tqdm(list((train_path / instrument_folder / 'left_frames').glob('*'))):
+            img = cv2.imread(str(file_name))
+            old_h, old_w, _ = img.shape
 
-        mask = np.zeros((old_h, old_w))
+            img = img[h_start: h_start + height, w_start: w_start + width]
+            cv2.imwrite(str(cropped_train_path / instrument_folder / 'images' / (file_name.stem + '.jpg')), img, [cv2.IMWRITE_JPEG_QUALITY, 100])
 
-        for mask_folder in mask_folders:
-            mask += cv2.imread(str(mask_folder / file_name.name), 0)
+            mask = np.zeros((old_h, old_w))
 
-        mask = (mask[h_start: h_start + height, w_start: w_start + width] > 0).astype(np.uint8) * 255
+            for mask_folder in mask_folders:
+                mask += cv2.imread(str(mask_folder / file_name.name), 0)
 
-        cv2.imwrite(str(cropped_train_path / instrument_folder / 'binary_masks' / file_name.name), mask)
+            mask = (mask[h_start: h_start + height, w_start: w_start + width] > 0).astype(np.uint8) * 255
+
+            cv2.imwrite(str(cropped_train_path / instrument_folder / 'binary_masks' / file_name.name), mask)

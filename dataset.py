@@ -9,10 +9,11 @@ data_path = Path('data')
 
 
 class BinaryDataset(Dataset):
-    def __init__(self, file_names: list, to_augment=False, transform=None):
+    def __init__(self, file_names: list, to_augment=False, transform=None, mode='train'):
         self.file_names = file_names
         self.to_augment = to_augment
         self.transform = transform
+        self.mode = mode
 
     def __len__(self):
         return len(self.file_names)
@@ -24,7 +25,10 @@ class BinaryDataset(Dataset):
 
         img, mask = self.transform(img, mask)
 
-        return to_float_tensor(img), torch.from_numpy(np.expand_dims(mask, 0)).float()
+        if self.mode == 'train':
+            return to_float_tensor(img), torch.from_numpy(np.expand_dims(mask, 0)).float()
+        else:
+            return to_float_tensor(img), Path(img_file_name).stem
 
 
 def to_float_tensor(img):
