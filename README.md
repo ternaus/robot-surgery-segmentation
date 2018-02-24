@@ -3,7 +3,7 @@
 The training dataset contatins 8 instrument datasets, while test datasets contains 10 instrument datasets. The whole project tree looks like:
 
 ```
-├── input
+├── data
 │   ├── test
 │   │   ├── instrument_dataset_1
 │   │   │   ├── left_frames
