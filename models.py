@@ -8,10 +8,6 @@ def conv3x3(in_, out):
     return nn.Conv2d(in_, out, 3, padding=1)
 
 
-def concat(xs):
-    return torch.cat(xs, 1)
-
-
 class ConvRelu(nn.Module):
     def __init__(self, in_: int, out: int):
         super().__init__()
@@ -25,30 +21,41 @@ class ConvRelu(nn.Module):
 
 
 class DecoderBlock(nn.Module):
-    def __init__(self, in_channels, middle_channels, out_channels):
-        super().__init__()
+    """
+    Paramaters for Deconvolution were chosen to avoid artifacts, following
+    link https://distill.pub/2016/deconv-checkerboard/
+    """
 
-        self.block = nn.Sequential(
-            ConvRelu(in_channels, middle_channels),
-            nn.ConvTranspose2d(middle_channels, out_channels, kernel_size=3, stride=2, padding=1, output_padding=1),
-            nn.ReLU(inplace=True)
-        )
+    def __init__(self, in_channels, middle_channels, out_channels, is_deconv=True):
+        super(DecoderBlock, self).__init__()
+        self.in_channels = in_channels
+
+        if is_deconv:
+            self.block = nn.Sequential(
+                ConvRelu(in_channels, middle_channels),
+                nn.ConvTranspose2d(middle_channels, out_channels, kernel_size=4, stride=2,
+                                   padding=1),
+                nn.ReLU(inplace=True)
+            )
+        else:
+            self.block = nn.Sequential(
+                nn.Upsample(scale_factor=2, mode='bilinear'),
+                ConvRelu(in_channels, middle_channels),
+                ConvRelu(middle_channels, out_channels),
+            )
 
     def forward(self, x):
         return self.block(x)
 
 
 class UNet11(nn.Module):
-    def __init__(self, num_filters=32, pretrained=False):
+    def __init__(self, num_classes=1, num_filters=32, pretrained=False):
         """
         :param num_classes:
         :param num_filters:
         :param pretrained:
             False - no pre-trained network used
             vgg - encoder pre-trained with VGG11
-            carvana - all weights pre trained on
-                Kaggle: Carvana dataset https://www.kaggle.com/c/carvana-image-masking-challenge
-
         """
         super().__init__()
         self.pool = nn.MaxPool2d(2, 2)
@@ -58,35 +65,48 @@ class UNet11(nn.Module):
         else:
             self.encoder = models.vgg11(pretrained=False).features
 
-        self.relu = self.encoder[1]
-        self.conv1 = self.encoder[0]
-        self.conv2 = self.encoder[3]
-        self.conv3s = self.encoder[6]
-        self.conv3 = self.encoder[8]
-        self.conv4s = self.encoder[11]
-        self.conv4 = self.encoder[13]
-        self.conv5s = self.encoder[16]
-        self.conv5 = self.encoder[18]
+        self.relu = nn.ReLU(inplace=True)
+        self.conv1 = nn.Sequential(self.encoder[0],
+                                   self.relu)
 
-        self.center = DecoderBlock(num_filters * 8 * 2, num_filters * 8 * 2, num_filters * 8)
-        self.dec5 = DecoderBlock(num_filters * (16 + 8), num_filters * 8 * 2, num_filters * 8)
-        self.dec4 = DecoderBlock(num_filters * (16 + 8), num_filters * 8 * 2, num_filters * 4)
-        self.dec3 = DecoderBlock(num_filters * (8 + 4), num_filters * 4 * 2, num_filters * 2)
-        self.dec2 = DecoderBlock(num_filters * (4 + 2), num_filters * 2 * 2, num_filters)
-        self.dec1 = ConvRelu(num_filters * (2 + 1), num_filters)
+        self.conv2 = nn.Sequential(self.encoder[3],
+                                   self.relu)
 
-        self.final = nn.Conv2d(num_filters, 1, kernel_size=1)
+        self.conv3 = nn.Sequential(
+            self.encoder[6],
+            self.relu,
+            self.encoder[8],
+            self.relu,
+        )
+        self.conv4 = nn.Sequential(
+            self.encoder[11],
+            self.relu,
+            self.encoder[13],
+            self.relu,
+        )
+
+        self.conv5 = nn.Sequential(
+            self.encoder[16],
+            self.relu,
+            self.encoder[18],
+            self.relu,
+        )
+
+        self.center = DecoderBlock(256 + num_filters * 8, num_filters * 8 * 2, num_filters * 8, is_deconv=True)
+        self.dec5 = DecoderBlock(512 + num_filters * 8, num_filters * 8 * 2, num_filters * 8, is_deconv=True)
+        self.dec4 = DecoderBlock(512 + num_filters * 8, num_filters * 8 * 2, num_filters * 4, is_deconv=True)
+        self.dec3 = DecoderBlock(256 + num_filters * 4, num_filters * 4 * 2, num_filters * 2, is_deconv=True)
+        self.dec2 = DecoderBlock(128 + num_filters * 2, num_filters * 2 * 2, num_filters, is_deconv=True)
+        self.dec1 = ConvRelu(64 + num_filters, num_filters)
+
+        self.final = nn.Conv2d(num_filters, num_classes, kernel_size=1)
 
     def forward(self, x):
-        conv1 = self.relu(self.conv1(x))
-        conv2 = self.relu(self.conv2(self.pool(conv1)))
-        conv3s = self.relu(self.conv3s(self.pool(conv2)))
-        conv3 = self.relu(self.conv3(conv3s))
-        conv4s = self.relu(self.conv4s(self.pool(conv3)))
-        conv4 = self.relu(self.conv4(conv4s))
-        conv5s = self.relu(self.conv5s(self.pool(conv4)))
-        conv5 = self.relu(self.conv5(conv5s))
-
+        conv1 = self.conv1(x)
+        conv2 = self.conv2(self.pool(conv1))
+        conv3 = self.conv3(self.pool(conv2))
+        conv4 = self.conv4(self.pool(conv3))
+        conv5 = self.conv5(self.pool(conv4))
         center = self.center(self.pool(conv5))
 
         dec5 = self.dec5(torch.cat([center, conv5], 1))
@@ -178,37 +198,36 @@ class DecoderBlockLinkNet(nn.Module):
     def __init__(self, in_channels, n_filters):
         super().__init__()
 
+        self.relu = nn.ReLU(inplace=True)
+
         # B, C, H, W -> B, C/4, H, W
         self.conv1 = nn.Conv2d(in_channels, in_channels // 4, 1)
         self.norm1 = nn.BatchNorm2d(in_channels // 4)
-        self.relu1 = nn.ReLU(inplace=True)
 
-        # B, C/4, H, W -> B, C/4, H, W
-        self.deconv2 = nn.ConvTranspose2d(in_channels // 4, in_channels // 4, 3,
-                                          stride=2, padding=1, output_padding=1)
+        # B, C/4, H, W -> B, C/4, 2 * H, 2 * W
+        self.deconv2 = nn.ConvTranspose2d(in_channels // 4, in_channels // 4, kernel_size=4,
+                                          stride=2, padding=1, output_padding=0)
         self.norm2 = nn.BatchNorm2d(in_channels // 4)
-        self.relu2 = nn.ReLU(inplace=True)
 
         # B, C/4, H, W -> B, C, H, W
         self.conv3 = nn.Conv2d(in_channels // 4, n_filters, 1)
         self.norm3 = nn.BatchNorm2d(n_filters)
-        self.relu3 = nn.ReLU(inplace=True)
 
     def forward(self, x):
         x = self.conv1(x)
         x = self.norm1(x)
-        x = self.relu1(x)
+        x = self.relu(x)
         x = self.deconv2(x)
         x = self.norm2(x)
-        x = self.relu2(x)
+        x = self.relu(x)
         x = self.conv3(x)
         x = self.norm3(x)
-        x = self.relu3(x)
+        x = self.relu(x)
         return x
 
 
 class LinkNet34(nn.Module):
-    def __init__(self, num_classes, num_channels=3, pretrained=False):
+    def __init__(self, num_classes=1, num_channels=3, pretrained=True):
         super().__init__()
         assert num_channels == 3
         filters = [64, 128, 256, 512]
