@@ -25,7 +25,7 @@ the notebooks folder contains Jupyter notebooks that helps us to unilize visuall
 
 To run the calculations as a first step you need to prepare data and run 
 ```
-prepare_data.py
+python prepare_data.py
 ```
 it removed unnessery part of images and make appropriate image resolutions.
 
