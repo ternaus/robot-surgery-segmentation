@@ -3,7 +3,7 @@ Script generates predictions, splitting original images into tiles, and assembli
 """
 import argparse
 from prepare_train_val import get_split
-from dataset import data_path, BinaryDataset
+from dataset import data_path, RoboticsDataset
 import cv2
 from models import UNet16, LinkNet34, UNet11
 import torch
@@ -55,7 +55,7 @@ def get_model(model_path, model_type='unet11'):
 
 def predict(model, from_file_names, batch_size: int, to_path):
     loader = DataLoader(
-        dataset=BinaryDataset(from_file_names, transform=img_transform, mode='predict'),
+        dataset=RoboticsDataset(from_file_names, transform=img_transform, mode='predict', problem_type='binary'),
         shuffle=False,
         batch_size=batch_size,
         num_workers=args.workers,

@@ -11,9 +11,9 @@ from torch.utils.data import DataLoader
 import torch.backends.cudnn as cudnn
 import torch.backends.cudnn
 
-from models import UNet11, LinkNet34, UNet16
-from loss import Loss
-from dataset import BinaryDataset
+from models import UNet11, LinkNet34
+from loss import LossBinary, LossMulti
+from dataset import RoboticsDataset
 import utils
 
 from prepare_train_val import get_split
@@ -60,7 +60,7 @@ def get_jaccard(y_true, y_pred):
 def main():
     parser = argparse.ArgumentParser()
     arg = parser.add_argument
-    arg('--jaccard-weight', type=float)
+    arg('--jaccard-weight', default=0, type=float)
     arg('--device-ids', type=str, default='0', help='For example 0,1 to run on two GPUs')
     arg('--fold', type=int, help='fold', default=0)
     arg('--root', default='runs/debug', help='checkpoint root')
@@ -68,15 +68,22 @@ def main():
     arg('--n-epochs', type=int, default=100)
     arg('--lr', type=float, default=0.0001)
     arg('--workers', type=int, default=8)
+    arg('--type', type=str, default='binary', choices=['binary', 'parts', 'instruments'])
 
     args = parser.parse_args()
 
     root = Path(args.root)
     root.mkdir(exist_ok=True, parents=True)
 
+    if args.type == 'parts':
+        num_classes = 4
+    elif args.type == 'instruments':
+        pass
+    else:
+        num_classes = 1
+
     # model = UNet11(pretrained='vgg')
-    # model = LinkNet34(num_classes=1)
-    model = UNet16(pretrained=True)
+    model = LinkNet34(num_classes=num_classes)
 
     if torch.cuda.is_available():
         if args.device_ids:
@@ -85,13 +92,16 @@ def main():
             device_ids = None
         model = nn.DataParallel(model, device_ids=device_ids).cuda()
 
-    loss = Loss()
+    if args.type == 'binary':
+        loss = LossBinary(jaccard_weight=args.jaccard_weight)
+    else:
+        loss = LossMulti(num_classes=num_classes, jaccard_weight=args.jaccard_weight)
 
     cudnn.benchmark = True
 
-    def make_loader(file_names, shuffle=False, transform=None):
+    def make_loader(file_names, shuffle=False, transform=None, problem_type='binary'):
         return DataLoader(
-            dataset=BinaryDataset(file_names, transform=transform),
+            dataset=RoboticsDataset(file_names, transform=transform, problem_type=problem_type),
             shuffle=shuffle,
             num_workers=args.workers,
             batch_size=args.batch_size,
