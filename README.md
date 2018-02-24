@@ -33,7 +33,7 @@ the notebooks folder contains Jupyter notebooks that helps us to unilize visuall
 |------------------|-----------|--------------------|--------------------------|---------------------|
 | U-Net            | 96.0      | in prog.           | 28 ms.                   | [Dropbox](https://drive.google.com/)|
 | Ternaus-Net11    | in prog.  | in prog.           | 50 ms.                   | [google drive](https://drive.google.com/drive/folders/1dFzqsFosU04oyAb_5DaieDsdKYXrgXfS)            |
-| Ternaus-Net16    | in prog.  | in prog.           | 50 ms.                   | in prog.            |
+| Ternaus-Net16    | in prog.  | in prog.           | 50 ms.                   | [google drive](https://drive.google.com/drive/folders/1M9SeI7T49HjdmCFVbeCM9mEt4edwyNFQ?usp=sharing)            |
 | Link-Net         | in prog.  | in prog.           | 50 ms.                   | in prog.            |
 | PSP-Net          | in prog.  | in prog.           | 50 ms.                   | in prog.            |
 
