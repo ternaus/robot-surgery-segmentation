@@ -38,7 +38,7 @@ the notebooks folder contains Jupyter notebooks that helps us to unilize visuall
 | PSP-Net          | in prog.  | in prog.           | 50 ms.                   | in prog.            |
 
 
-### 3-class Segmentation (part of instruments)
+### 3-class Segmentation (parts of instruments)
 
 | Model            |Mean IOU   | Mean pix. accuracy | Inference time (512x512) | Model Download Link |
 |------------------|-----------|--------------------|--------------------------|---------------------|
