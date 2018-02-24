@@ -23,6 +23,12 @@ The training dataset contatins 8 instrument datasets, while test datasets contai
 ```
 the notebooks folder contains Jupyter notebooks that helps us to unilize visually the train and test images. The predictions folder contains weights of several networks
 
+To run the calculations as a first step you need to prepare data and run 
+```
+prepare_data.py
+```
+it removed unnessery part of images and make appropriate image resolutions.
+
 ![Alt Text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset4/original.gif) ![Alt Text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset4/binary.gif)
 
 ![Alt Text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset4/parts.gif) ![Alt Text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset4/type.gif)
