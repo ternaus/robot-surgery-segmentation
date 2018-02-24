@@ -14,18 +14,24 @@ train_path = data_path / 'train'
 
 cropped_train_path = data_path / 'cropped_train'
 
-
 original_height, original_width = 1080, 1920
 height, width = 1024, 1280
 h_start, w_start = 28, 320
 
+binary_factor = 255
+parts_factor = 85
 
 if __name__ == '__main__':
     for instrument_index in range(1, 9):
         instrument_folder = 'instrument_dataset_' + str(instrument_index)
 
         (cropped_train_path / instrument_folder / 'images').mkdir(exist_ok=True, parents=True)
-        (cropped_train_path / instrument_folder / 'binary_masks').mkdir(exist_ok=True, parents=True)
+
+        binary_mask_folder = (cropped_train_path / instrument_folder / 'binary_masks')
+        binary_mask_folder.mkdir(exist_ok=True, parents=True)
+
+        parts_mask_folder = (cropped_train_path / instrument_folder / 'parts_masks')
+        parts_mask_folder.mkdir(exist_ok=True, parents=True)
 
         mask_folders = (train_path / instrument_folder / 'ground_truth').glob('*')
         mask_folders = [x for x in mask_folders if 'Other' not in str(mask_folders)]
@@ -35,13 +41,24 @@ if __name__ == '__main__':
             old_h, old_w, _ = img.shape
 
             img = img[h_start: h_start + height, w_start: w_start + width]
-            cv2.imwrite(str(cropped_train_path / instrument_folder / 'images' / (file_name.stem + '.jpg')), img, [cv2.IMWRITE_JPEG_QUALITY, 100])
+            cv2.imwrite(str(cropped_train_path / instrument_folder / 'images' / (file_name.stem + '.jpg')), img,
+                        [cv2.IMWRITE_JPEG_QUALITY, 100])
 
-            mask = np.zeros((old_h, old_w))
+            mask_binary = np.zeros((old_h, old_w))
+            mask_parts = np.zeros((old_h, old_w))
 
             for mask_folder in mask_folders:
-                mask += cv2.imread(str(mask_folder / file_name.name), 0)
+                mask = cv2.imread(str(mask_folder / file_name.name), 0)
+                mask_binary += mask
 
-            mask = (mask[h_start: h_start + height, w_start: w_start + width] > 0).astype(np.uint8) * 255
+                mask_parts[mask == 10] = 1  # Shaft
+                mask_parts[mask == 20] = 2  # Wrist
+                mask_parts[mask == 30] = 3  # Claspers
 
-            cv2.imwrite(str(cropped_train_path / instrument_folder / 'binary_masks' / file_name.name), mask)
+            mask_binary = (mask_binary[h_start: h_start + height, w_start: w_start + width] > 0).astype(
+                np.uint8) * binary_factor
+            mask_parts = (mask_parts[h_start: h_start + height, w_start: w_start + width]).astype(
+                np.uint8) * parts_factor
+
+            cv2.imwrite(str(binary_mask_folder / file_name.name), mask_binary)
+            cv2.imwrite(str(parts_mask_folder / file_name.name), mask_parts)
