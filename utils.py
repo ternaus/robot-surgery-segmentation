@@ -98,8 +98,3 @@ def train(args, model, criterion, train_loader, valid_loader, validation, init_o
             save(epoch)
             print('done.')
             return
-
-
-def batches(lst, n):
-    for i in range(0, len(lst), n):
-        yield lst[i: i + n]

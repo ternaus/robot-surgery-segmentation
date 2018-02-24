@@ -7,90 +7,23 @@ import numpy as np
 import torch
 from torch import nn
 from torch.optim import Adam
-from torch.utils.data import DataLoader, Dataset
-
+from torch.utils.data import DataLoader
+import torch.backends.cudnn as cudnn
 import torch.backends.cudnn
 
-from unet_models import UNet11, Loss
-from linknet import LinkNet34
+from models import UNet11, LinkNet34, UNet16
+from loss import Loss
+from dataset import BinaryDataset
 import utils
-import cv2
-import jpeg4py
 
+from prepare_train_val import get_split
 
-class BinaryDataset(Dataset):
-    def __init__(self, file_names: list, to_augment=False):
-        self.file_names = file_names
-        self.to_augment = to_augment
-
-    def __len__(self):
-        return len(self.file_names)
-
-    def __getitem__(self, idx):
-        img = load_image(str(self.file_names[idx]))
-        mask = load_mask(str(self.file_names[idx]).replace('images', 'binary_masks').replace('jpg', 'png'))
-
-        if self.to_augment:
-            img, mask = augment(img, mask)
-
-        return utils.img_transform(img), torch.from_numpy(np.expand_dims(mask, 0)).float()
-
-
-def augment(img, mask):
-    if np.random.random() < 0.5:
-        img = np.fliplr(img)
-        mask = np.fliplr(mask)
-
-    if np.random.random() < 0.5:
-        img = np.flipud(img)
-        mask = np.flipud(mask)
-
-    # if np.random.random() < 0.5:
-    #     img = randomHueSaturationValue(img,
-    #                                    hue_shift_limit=(-50, 50),
-    #                                    sat_shift_limit=(-5, 5),
-    #                                    val_shift_limit=(-15, 15))
-
-    return img.copy(), mask.copy()
-
-
-def randomHueSaturationValue(image, hue_shift_limit=(-180, 180),
-                             sat_shift_limit=(-255, 255),
-                             val_shift_limit=(-255, 255)):
-    """
-    img = randomHueSaturationValue(img,
-                                   hue_shift_limit=(-50, 50),
-                                   sat_shift_limit=(-5, 5),
-                                   val_shift_limit=(-15, 15))
-
-    :param image:
-    :param hue_shift_limit:
-    :param sat_shift_limit:
-    :param val_shift_limit:
-    :param u:
-    :return:
-    """
-
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-    h, s, v = cv2.split(image)
-    hue_shift = np.random.uniform(hue_shift_limit[0], hue_shift_limit[1])
-    h = cv2.add(h, hue_shift)
-    sat_shift = np.random.uniform(sat_shift_limit[0], sat_shift_limit[1])
-    s = cv2.add(s, sat_shift)
-    val_shift = np.random.uniform(val_shift_limit[0], val_shift_limit[1])
-    v = cv2.add(v, val_shift)
-    image = cv2.merge((h, s, v))
-    image = cv2.cvtColor(image, cv2.COLOR_HSV2RGB)
-
-    return image
-
-
-def load_image(path):
-    return jpeg4py.JPEG(str(path)).decode()
-
-
-def load_mask(path):
-    return (cv2.imread(str(path), 0) > 0).astype(np.uint8)
+from transforms import (DualCompose,
+                        ImageOnly,
+                        Normalize,
+                        HorizontalFlip,
+                        VerticalFlip,
+                        RandomHueSaturationValue)
 
 
 def validation(model: nn.Module, criterion, valid_loader) -> Dict[str, float]:
@@ -124,26 +57,6 @@ def get_jaccard(y_true, y_pred):
     return (intersection / (union - intersection + epsilon)).mean()
 
 
-def get_file_names(fold: int):
-    folds = {0: [1, 3],
-             1: [2, 5],
-             2: [4, 8],
-             3: [6, 7]}
-
-    train_path = Path('data') / 'cropped_train'
-
-    train_file_names = []
-    val_file_names = []
-
-    for instrument_id in range(1, 9):
-        if instrument_id in folds[fold]:
-            val_file_names += list((train_path / ('instrument_dataset_' + str(instrument_id)) / 'images').glob('*'))
-        else:
-            train_file_names += list((train_path / ('instrument_dataset_' + str(instrument_id)) / 'images').glob('*'))
-
-    return train_file_names, val_file_names
-
-
 def main():
     parser = argparse.ArgumentParser()
     arg = parser.add_argument
@@ -162,7 +75,8 @@ def main():
     root.mkdir(exist_ok=True, parents=True)
 
     # model = UNet11(pretrained='vgg')
-    model = LinkNet34(num_classes=1)
+    # model = LinkNet34(num_classes=1)
+    model = UNet16(pretrained=True)
 
     if torch.cuda.is_available():
         if args.device_ids:
@@ -173,19 +87,33 @@ def main():
 
     loss = Loss()
 
-    def make_loader(file_names, to_augment=False, shuffle=False):
+    cudnn.benchmark = True
+
+    def make_loader(file_names, shuffle=False, transform=None):
         return DataLoader(
-            dataset=BinaryDataset(file_names, to_augment=to_augment),
+            dataset=BinaryDataset(file_names, transform=transform),
             shuffle=shuffle,
             num_workers=args.workers,
             batch_size=args.batch_size,
             pin_memory=torch.cuda.is_available()
         )
 
-    train_file_names, val_file_names = get_file_names(args.fold)
+    train_file_names, val_file_names = get_split(args.fold)
 
-    train_loader = make_loader(train_file_names, to_augment=True, shuffle=True)
-    valid_loader = make_loader(val_file_names)
+    print('num train = {}, num_val = {}'.format(len(train_file_names), len(val_file_names)))
+
+    train_transform = DualCompose([
+        HorizontalFlip(),
+        VerticalFlip(),
+        ImageOnly(Normalize())
+    ])
+
+    val_transform = DualCompose([
+        ImageOnly(Normalize())
+    ])
+
+    train_loader = make_loader(train_file_names, shuffle=True, transform=train_transform)
+    valid_loader = make_loader(val_file_names, transform=val_transform)
 
     root.joinpath('params.json').write_text(
         json.dumps(vars(args), indent=True, sort_keys=True))
