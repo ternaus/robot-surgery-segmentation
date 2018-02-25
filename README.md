@@ -29,9 +29,9 @@ python prepare_data.py
 ```
 it removed unnessery part of images and make appropriate image resolutions.
 
-![Alt Text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset4/original.gif) ![Alt Text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset4/binary.gif)
+![Alt Text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset6/original.gif) ![Alt Text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset6/binary.gif)
 
-![Alt Text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset4/parts.gif) ![Alt Text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset4/type.gif)
+![Alt Text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset6/parts.gif) ![Alt Text](https://github.com/ternaus/robots/blob/master/images/gifs/dataset6/type.gif)
 
 ### Binary Segmentation
 
