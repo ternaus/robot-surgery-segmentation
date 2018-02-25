@@ -44,7 +44,7 @@ it removed unnessery part of images and make appropriate image resolutions.
 | PSP-Net          | in prog.  | in prog.           | 50 ms.                   | in prog.            |
 
 
-### 3-class Segmentation (parts of instruments)
+### multi-class Segmentation (3 parts of an instrument)
 
 | Model            |Mean IOU   | Mean pix. accuracy | Inference time (512x512) | Model Download Link |
 |------------------|-----------|--------------------|--------------------------|---------------------|
@@ -54,7 +54,7 @@ it removed unnessery part of images and make appropriate image resolutions.
 | Link-Net         | in prog.  | in prog.           | 50 ms.                   | in prog.            |
 | PSP-Net          | in prog.  | in prog.           | 50 ms.                   | in prog.            |
 
-### 3-class Segmentation (different instruments)
+### multi-class Segmentation (3 different instruments)
 
 | Model            |Mean IOU   | Mean pix. accuracy | Inference time (512x512) | Model Download Link |
 |------------------|-----------|--------------------|--------------------------|---------------------|
