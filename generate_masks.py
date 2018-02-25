@@ -11,6 +11,7 @@ from pathlib import Path
 from tqdm import tqdm
 import numpy as np
 import utils
+import prepare_data
 from torch.utils.data import DataLoader
 from torch.nn import functional as F
 from prepare_data import (original_height,
@@ -27,19 +28,25 @@ img_transform = DualCompose([
 ])
 
 
-def get_model(model_path, model_type='unet11'):
+def get_model(model_path, model_type='unet11', problem_type='binary'):
     """
 
     :param model_path: 'UNet16', 'UNet11', 'LinkNet34'
     :param model_type:
+    :param problem_type: 'binary', 'parts', 'instruments'
     :return:
     """
+    if problem_type == 'binary':
+        num_classes = 1
+    elif problem_type == 'parts':
+        num_classes = 4
+
     if model_type == 'UNet16':
-        model = UNet16()
+        model = UNet16(num_classes=num_classes)
     elif model_type == 'UNet11':
-        model = UNet11()
+        model = UNet11(num_classes=num_classes)
     elif model_type == 'LinkNet34':
-        model = LinkNet34(num_classes=1)
+        model = LinkNet34(num_classes=num_classes)
 
     state = torch.load(str(model_path))
     state = {key.replace('module.', ''): value for key, value in state['model'].items()}
@@ -53,9 +60,9 @@ def get_model(model_path, model_type='unet11'):
     return model
 
 
-def predict(model, from_file_names, batch_size: int, to_path):
+def predict(model, from_file_names, batch_size: int, to_path, problem_type):
     loader = DataLoader(
-        dataset=RoboticsDataset(from_file_names, transform=img_transform, mode='predict', problem_type='binary'),
+        dataset=RoboticsDataset(from_file_names, transform=img_transform, mode='predict', problem_type=problem_type),
         shuffle=False,
         batch_size=batch_size,
         num_workers=args.workers,
@@ -64,11 +71,16 @@ def predict(model, from_file_names, batch_size: int, to_path):
 
     for batch_num, (inputs, stems) in enumerate(tqdm(loader, desc='Predict')):
         inputs = utils.variable(inputs, volatile=True)
-        outputs = F.sigmoid(model(inputs))
-        mask = (outputs.data.cpu().numpy() * 255).astype(np.uint8)
+
+        outputs = model(inputs)
 
         for i, image_name in enumerate(stems):
-            t_mask = mask[i, 0]
+            if problem_type == 'binary':
+                factor = prepare_data.binary_factor
+                t_mask = (F.sigmoid(outputs[i, 0]).data.cpu().numpy() * factor).astype(np.uint8)
+            elif problem_type == 'parts':
+                factor = prepare_data.parts_factor
+                t_mask = (outputs[i].data.cpu().numpy().argmax(axis=0) * factor).astype(np.uint8)
 
             h, w = t_mask.shape
 
@@ -81,23 +93,24 @@ def predict(model, from_file_names, batch_size: int, to_path):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     arg = parser.add_argument
-    arg('--model_path', type=str, default='data/models/linknet34_60', help='path to model folder')
+    arg('--model_path', type=str, default='data/models/unet_parts_20', help='path to model folder')
     arg('--model_type', type=str, default='UNet11', help='network architecture',
         choices=['UNet11', 'UNet16', 'LinkNet34'])
     arg('--output_path', type=str, help='path to save images', default='.')
     arg('--batch-size', type=int, default=4)
     arg('--fold', type=int, default=0)
+    arg('--problem_type', type=str, default='parts', choices=['binary', 'parts', 'instruments'])
     arg('--workers', type=int, default=8)
 
     args = parser.parse_args()
 
     _, file_names = get_split(args.fold)
     model = get_model(str(Path(args.model_path).joinpath('model_{fold}.pt'.format(fold=args.fold))),
-                      model_type='LinkNet34')
+                      model_type=args.model_type, problem_type=args.problem_type)
 
     print('num file_names = {}'.format(len(file_names)))
 
     output_path = Path(args.output_path) / str(args.fold)
     output_path.mkdir(exist_ok=True, parents=True)
 
-    predict(model, file_names, args.batch_size, output_path)
+    predict(model, file_names, args.batch_size, output_path, problem_type=args.problem_type)
