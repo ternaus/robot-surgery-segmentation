@@ -7,7 +7,6 @@ import numpy as np
 
 import torch
 from torch.autograd import Variable
-from torchvision.transforms import ToTensor, Normalize, Compose
 import tqdm
 
 
@@ -21,12 +20,6 @@ def cuda(x):
     return x.cuda(async=True) if torch.cuda.is_available() else x
 
 
-img_transform = Compose([
-    ToTensor(),
-    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-])
-
-
 def write_event(log, step: int, **data):
     data['step'] = step
     data['dt'] = datetime.now().isoformat()
@@ -35,7 +28,7 @@ def write_event(log, step: int, **data):
     log.flush()
 
 
-def train(args, model, criterion, train_loader, valid_loader, validation, init_optimizer, n_epochs=None, fold=None):
+def train(args, model, criterion, train_loader, valid_loader, validation, init_optimizer, n_epochs=None, fold=None, num_classes=None):
     lr = args.lr
     n_epochs = n_epochs or args.n_epochs
     optimizer = init_optimizer(lr)
@@ -88,7 +81,7 @@ def train(args, model, criterion, train_loader, valid_loader, validation, init_o
             write_event(log, step, loss=mean_loss)
             tq.close()
             save(epoch + 1)
-            valid_metrics = validation(model, criterion, valid_loader)
+            valid_metrics = validation(model, criterion, valid_loader, num_classes)
             write_event(log, step, **valid_metrics)
             valid_loss = valid_metrics['valid_loss']
             valid_losses.append(valid_loss)

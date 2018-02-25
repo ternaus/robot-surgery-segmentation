@@ -28,7 +28,10 @@ class RoboticsDataset(Dataset):
         img, mask = self.transform(img, mask)
 
         if self.mode == 'train':
-            return to_float_tensor(img), torch.from_numpy(np.expand_dims(mask, 0)).float()
+            if self.problem_type == 'binary':
+                return to_float_tensor(img), torch.from_numpy(np.expand_dims(mask, 0)).float()
+            else:
+                return to_float_tensor(img), torch.from_numpy(mask).long()
         else:
             return to_float_tensor(img), Path(img_file_name).stem
 

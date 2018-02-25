@@ -3,7 +3,7 @@ Script generates predictions, splitting original images into tiles, and assembli
 """
 import argparse
 from prepare_train_val import get_split
-from dataset import data_path, RoboticsDataset
+from dataset import RoboticsDataset
 import cv2
 from models import UNet16, LinkNet34, UNet11
 import torch

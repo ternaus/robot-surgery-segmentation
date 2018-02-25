@@ -1,9 +1,8 @@
 import argparse
 import json
 from pathlib import Path
-from typing import Dict
+from validation import validation_binary, validation_multi
 
-import numpy as np
 import torch
 from torch import nn
 from torch.optim import Adam
@@ -11,7 +10,7 @@ from torch.utils.data import DataLoader
 import torch.backends.cudnn as cudnn
 import torch.backends.cudnn
 
-from models import UNet11, LinkNet34
+from models import UNet11, LinkNet34, UNet
 from loss import LossBinary, LossMulti
 from dataset import RoboticsDataset
 import utils
@@ -22,45 +21,13 @@ from transforms import (DualCompose,
                         ImageOnly,
                         Normalize,
                         HorizontalFlip,
-                        VerticalFlip,
-                        RandomHueSaturationValue)
-
-
-def validation(model: nn.Module, criterion, valid_loader) -> Dict[str, float]:
-    model.eval()
-    losses = []
-
-    jaccard = []
-
-    for inputs, targets in valid_loader:
-        inputs = utils.variable(inputs, volatile=True)
-        targets = utils.variable(targets)
-        outputs = model(inputs)
-        loss = criterion(outputs, targets)
-        losses.append(loss.data[0])
-        jaccard += [get_jaccard(targets, (outputs > 0).float()).data[0]]
-
-    valid_loss = np.mean(losses)  # type: float
-
-    valid_jaccard = np.mean(jaccard)
-
-    print('Valid loss: {:.5f}, jaccard: {:.5f}'.format(valid_loss, valid_jaccard))
-    metrics = {'valid_loss': valid_loss, 'jaccard_loss': valid_jaccard}
-    return metrics
-
-
-def get_jaccard(y_true, y_pred):
-    epsilon = 1e-15
-    intersection = (y_pred * y_true).sum(dim=-2).sum(dim=-1)
-    union = y_true.sum(dim=-2).sum(dim=-1) + y_pred.sum(dim=-2).sum(dim=-1)
-
-    return (intersection / (union - intersection + epsilon)).mean()
+                        VerticalFlip)
 
 
 def main():
     parser = argparse.ArgumentParser()
     arg = parser.add_argument
-    arg('--jaccard-weight', default=0, type=float)
+    arg('--jaccard-weight', default=1, type=float)
     arg('--device-ids', type=str, default='0', help='For example 0,1 to run on two GPUs')
     arg('--fold', type=int, help='fold', default=0)
     arg('--root', default='runs/debug', help='checkpoint root')
@@ -69,6 +36,7 @@ def main():
     arg('--lr', type=float, default=0.0001)
     arg('--workers', type=int, default=8)
     arg('--type', type=str, default='binary', choices=['binary', 'parts', 'instruments'])
+    arg('--model', type=str, default='UNet', choices=['UNet', 'UNet11', 'LinkNet34'])
 
     args = parser.parse_args()
 
@@ -82,8 +50,14 @@ def main():
     else:
         num_classes = 1
 
-    # model = UNet11(pretrained='vgg')
-    model = LinkNet34(num_classes=num_classes)
+    if args.model == 'UNet':
+        model = UNet(num_classes=num_classes)
+    elif args.model == 'UNet11':
+        model = UNet11(num_classes=num_classes, pretrained='vgg')
+    elif args.model == 'LinkNet34':
+        model = LinkNet34(num_classes=num_classes, pretrained=True)
+    else:
+        model = UNet(num_classes=num_classes, input_channels=3)
 
     if torch.cuda.is_available():
         if args.device_ids:
@@ -122,11 +96,16 @@ def main():
         ImageOnly(Normalize())
     ])
 
-    train_loader = make_loader(train_file_names, shuffle=True, transform=train_transform)
-    valid_loader = make_loader(val_file_names, transform=val_transform)
+    train_loader = make_loader(train_file_names, shuffle=True, transform=train_transform, problem_type=args.type)
+    valid_loader = make_loader(val_file_names, transform=val_transform, problem_type=args.type)
 
     root.joinpath('params.json').write_text(
         json.dumps(vars(args), indent=True, sort_keys=True))
+
+    if args.type == 'binary':
+        valid = validation_binary
+    else:
+        valid = validation_multi
 
     utils.train(
         init_optimizer=lambda lr: Adam(model.parameters(), lr=lr),
@@ -135,8 +114,9 @@ def main():
         criterion=loss,
         train_loader=train_loader,
         valid_loader=valid_loader,
-        validation=validation,
-        fold=args.fold
+        validation=valid,
+        fold=args.fold,
+        num_classes=num_classes
     )
 
 
