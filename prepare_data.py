@@ -20,6 +20,8 @@ h_start, w_start = 28, 320
 
 binary_factor = 255
 parts_factor = 85
+instrument_factor = 32
+
 
 if __name__ == '__main__':
     for instrument_index in range(1, 9):
@@ -33,8 +35,11 @@ if __name__ == '__main__':
         parts_mask_folder = (cropped_train_path / instrument_folder / 'parts_masks')
         parts_mask_folder.mkdir(exist_ok=True, parents=True)
 
-        mask_folders = (train_path / instrument_folder / 'ground_truth').glob('*')
-        mask_folders = [x for x in mask_folders if 'Other' not in str(mask_folders)]
+        instrument_mask_folder = (cropped_train_path / instrument_folder / 'instrument_masks')
+        instrument_mask_folder.mkdir(exist_ok=True, parents=True)
+
+        mask_folders = list((train_path / instrument_folder / 'ground_truth').glob('*'))
+        # mask_folders = [x for x in mask_folders if 'Other' not in str(mask_folders)]
 
         for file_name in tqdm(list((train_path / instrument_folder / 'left_frames').glob('*'))):
             img = cv2.imread(str(file_name))
@@ -46,19 +51,40 @@ if __name__ == '__main__':
 
             mask_binary = np.zeros((old_h, old_w))
             mask_parts = np.zeros((old_h, old_w))
+            mask_instruments = np.zeros((old_h, old_w))
 
             for mask_folder in mask_folders:
                 mask = cv2.imread(str(mask_folder / file_name.name), 0)
-                mask_binary += mask
 
-                mask_parts[mask == 10] = 1  # Shaft
-                mask_parts[mask == 20] = 2  # Wrist
-                mask_parts[mask == 30] = 3  # Claspers
+                if 'Bipolar_Forceps' in str(mask_folder):
+                    mask_instruments[mask > 0] = 1
+                elif 'Prograsp_Forceps' in str(mask_folder):
+                    mask_instruments[mask > 0] = 2
+                elif 'Large_Needle_Driver' in str(mask_folder):
+                    mask_instruments[mask > 0] = 3
+                elif 'Vessel_Sealer' in str(mask_folder):
+                    mask_instruments[mask > 0] = 4
+                elif 'Grasping_Retractor' in str(mask_folder):
+                    mask_instruments[mask > 0] = 5
+                elif 'Monopolar_Curved_Scissors' in str(mask_folder):
+                    mask_instruments[mask > 0] = 6
+                elif 'Other' in str(mask_folder):
+                    mask_instruments[mask > 0] = 7
+
+                if 'Other' not in str(mask_folder):
+                    mask_binary += mask
+
+                    mask_parts[mask == 10] = 1  # Shaft
+                    mask_parts[mask == 20] = 2  # Wrist
+                    mask_parts[mask == 30] = 3  # Claspers
 
             mask_binary = (mask_binary[h_start: h_start + height, w_start: w_start + width] > 0).astype(
                 np.uint8) * binary_factor
             mask_parts = (mask_parts[h_start: h_start + height, w_start: w_start + width]).astype(
                 np.uint8) * parts_factor
+            mask_instruments = (mask_instruments[h_start: h_start + height, w_start: w_start + width]).astype(
+                np.uint8) * instrument_factor
 
             cv2.imwrite(str(binary_mask_folder / file_name.name), mask_binary)
             cv2.imwrite(str(parts_mask_folder / file_name.name), mask_parts)
+            cv2.imwrite(str(instrument_mask_folder / file_name.name), mask_instruments)
