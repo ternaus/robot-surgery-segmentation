@@ -35,7 +35,7 @@ if __name__ == '__main__':
         parts_mask_folder = (cropped_train_path / instrument_folder / 'parts_masks')
         parts_mask_folder.mkdir(exist_ok=True, parents=True)
 
-        instrument_mask_folder = (cropped_train_path / instrument_folder / 'instrument_masks')
+        instrument_mask_folder = (cropped_train_path / instrument_folder / 'instruments_masks')
         instrument_mask_folder.mkdir(exist_ok=True, parents=True)
 
         mask_folders = list((train_path / instrument_folder / 'ground_truth').glob('*'))

@@ -46,7 +46,7 @@ def main():
     if args.type == 'parts':
         num_classes = 4
     elif args.type == 'instruments':
-        pass
+        num_classes = 8
     else:
         num_classes = 1
 

@@ -45,13 +45,15 @@ def load_image(path):
 
 
 def load_mask(path, problem_type):
-
     if problem_type == 'binary':
         mask_folder = 'binary_masks'
         factor = prepare_data.binary_factor
     elif problem_type == 'parts':
         mask_folder = 'parts_masks'
         factor = prepare_data.parts_factor
+    elif problem_type == 'instruments':
+        factor = prepare_data.instrument_factor
+        mask_folder = 'instruments_masks'
 
     mask = cv2.imread(str(path).replace('images', mask_folder).replace('jpg', 'png'), 0)
 
