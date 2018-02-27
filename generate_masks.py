@@ -40,6 +40,8 @@ def get_model(model_path, model_type='unet11', problem_type='binary'):
         num_classes = 1
     elif problem_type == 'parts':
         num_classes = 4
+    elif problem_type == 'instruments':
+        num_classes = 8
 
     if model_type == 'UNet16':
         model = UNet16(num_classes=num_classes)
@@ -47,6 +49,8 @@ def get_model(model_path, model_type='unet11', problem_type='binary'):
         model = UNet11(num_classes=num_classes)
     elif model_type == 'LinkNet34':
         model = LinkNet34(num_classes=num_classes)
+    elif model_type == 'UNet':
+        model = UNet(num_classes=num_classes)
 
     state = torch.load(str(model_path))
     state = {key.replace('module.', ''): value for key, value in state['model'].items()}
@@ -80,6 +84,9 @@ def predict(model, from_file_names, batch_size: int, to_path, problem_type):
                 t_mask = (F.sigmoid(outputs[i, 0]).data.cpu().numpy() * factor).astype(np.uint8)
             elif problem_type == 'parts':
                 factor = prepare_data.parts_factor
+                t_mask = (outputs[i].data.cpu().numpy().argmax(axis=0) * factor).astype(np.uint8)
+            elif problem_type == 'instruments':
+                factor = prepare_data.instrument_factor
                 t_mask = (outputs[i].data.cpu().numpy().argmax(axis=0) * factor).astype(np.uint8)
 
             h, w = t_mask.shape

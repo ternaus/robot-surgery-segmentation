@@ -7,14 +7,48 @@ from tqdm import tqdm
 from prepare_data import height, width, h_start, w_start
 
 
+def general_dice(y_true, y_pred):
+    result = []
+
+    if y_true.sum() == 0:
+        if y_pred.sum() == 0:
+            return 1
+        else:
+            return 0
+
+    for instrument_id in set(y_true.flatten()):
+        if instrument_id == 0:
+            continue
+        result += [dice(y_true == instrument_id, y_pred == instrument_id)]
+
+    return np.mean(result)
+
+
+def general_jaccard(y_true, y_pred):
+    result = []
+
+    if y_true.sum() == 0:
+        if y_pred.sum() == 0:
+            return 1
+        else:
+            return 0
+
+    for instrument_id in set(y_true.flatten()):
+        if instrument_id == 0:
+            continue
+        result += [jaccard(y_true == instrument_id, y_pred == instrument_id)]
+
+    return np.mean(result)
+
+
 def jaccard(y_true, y_pred):
     intersection = (y_true * y_pred).sum()
     union = y_true.sum() + y_pred.sum() - intersection
-    return intersection / (union + 1e-15)
+    return (intersection + 1e-15) / (union + 1e-15)
 
 
 def dice(y_true, y_pred):
-    return 2 * (y_true * y_pred).sum() / (y_true.sum() + y_pred.sum() + 1e-15)
+    return (2 * (y_true * y_pred).sum() + 1e-15) / (y_true.sum() + y_pred.sum() + 1e-15)
 
 
 if __name__ == '__main__':
@@ -30,19 +64,51 @@ if __name__ == '__main__':
     result_dice = []
     result_jaccard = []
 
-    for instrument_id in tqdm(range(1, 9)):
-        for file_name in (Path(args.train_path) / ('instrument_dataset_' + str(instrument_id)) / 'binary_masks').glob(
-                '*'):
-            y_true = (cv2.imread(str(file_name), 0) > 0).astype(np.uint8)
+    if args.problem_type == 'binary':
+        for instrument_id in tqdm(range(1, 9)):
+            for file_name in (
+                    Path(args.train_path) / ('instrument_dataset_' + str(instrument_id)) / 'binary_masks').glob(
+                    '*'):
+                y_true = (cv2.imread(str(file_name), 0) > 0).astype(np.uint8)
 
-            pred_file_name = Path(args.target_path) / 'binary' / (
-                'instrument_dataset_' + str(instrument_id)) / file_name.name
+                pred_file_name = Path(args.target_path) / 'binary' / (
+                    'instrument_dataset_' + str(instrument_id)) / file_name.name
 
-            y_pred = (cv2.imread(str(pred_file_name), 0) > 255 * 0.5).astype(np.uint8)[h_start:h_start + height,
-                     w_start:w_start + width]
+                y_pred = (cv2.imread(str(pred_file_name), 0) > 255 * 0.5).astype(np.uint8)[h_start:h_start + height,
+                         w_start:w_start + width]
 
-            result_dice += [dice(y_true, y_pred)]
-            result_jaccard += [jaccard(y_true, y_pred)]
+                result_dice += [dice(y_true, y_pred)]
+                result_jaccard += [jaccard(y_true, y_pred)]
+
+    elif args.problem_type == 'parts':
+        for instrument_id in tqdm(range(1, 9)):
+            for file_name in (
+                    Path(args.train_path) / ('instrument_dataset_' + str(instrument_id)) / 'parts_masks').glob(
+                    '*'):
+                y_true = cv2.imread(str(file_name), 0)
+
+                pred_file_name = Path(args.target_path) / 'parts' / (
+                    'instrument_dataset_' + str(instrument_id)) / file_name.name
+
+                y_pred = cv2.imread(str(pred_file_name), 0)[h_start:h_start + height, w_start:w_start + width]
+
+                result_dice += [general_dice(y_true, y_pred)]
+                result_jaccard += [general_jaccard(y_true, y_pred)]
+
+    elif args.problem_type == 'instruments':
+        for instrument_id in tqdm(range(1, 9)):
+            for file_name in (
+                    Path(args.train_path) / ('instrument_dataset_' + str(instrument_id)) / 'instruments_masks').glob(
+                    '*'):
+                y_true = cv2.imread(str(file_name), 0)
+
+                pred_file_name = Path(args.target_path) / 'instruments' / (
+                    'instrument_dataset_' + str(instrument_id)) / file_name.name
+
+                y_pred = cv2.imread(str(pred_file_name), 0)[h_start:h_start + height, w_start:w_start + width]
+
+                result_dice += [general_dice(y_true, y_pred)]
+                result_jaccard += [general_jaccard(y_true, y_pred)]
 
     print('Dice = ', np.mean(result_dice), np.std(result_dice))
     print('Jaccard = ', np.mean(result_jaccard), np.std(result_jaccard))
