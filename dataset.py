@@ -33,7 +33,7 @@ class RoboticsDataset(Dataset):
             else:
                 return to_float_tensor(img), torch.from_numpy(mask).long()
         else:
-            return to_float_tensor(img), Path(img_file_name).stem
+            return to_float_tensor(img), str(img_file_name)
 
 
 def to_float_tensor(img):

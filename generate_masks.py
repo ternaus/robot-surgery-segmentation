@@ -5,7 +5,7 @@ import argparse
 from prepare_train_val import get_split
 from dataset import RoboticsDataset
 import cv2
-from models import UNet16, LinkNet34, UNet11
+from models import UNet16, LinkNet34, UNet11, UNet
 import torch
 from pathlib import Path
 from tqdm import tqdm
@@ -69,12 +69,12 @@ def predict(model, from_file_names, batch_size: int, to_path, problem_type):
         pin_memory=torch.cuda.is_available()
     )
 
-    for batch_num, (inputs, stems) in enumerate(tqdm(loader, desc='Predict')):
+    for batch_num, (inputs, paths) in enumerate(tqdm(loader, desc='Predict')):
         inputs = utils.variable(inputs, volatile=True)
 
         outputs = model(inputs)
 
-        for i, image_name in enumerate(stems):
+        for i, image_name in enumerate(paths):
             if problem_type == 'binary':
                 factor = prepare_data.binary_factor
                 t_mask = (F.sigmoid(outputs[i, 0]).data.cpu().numpy() * factor).astype(np.uint8)
@@ -87,30 +87,48 @@ def predict(model, from_file_names, batch_size: int, to_path, problem_type):
             full_mask = np.zeros((original_height, original_width))
             full_mask[h_start:h_start + h, w_start:w_start + w] = t_mask
 
-            cv2.imwrite(str(to_path / (stems[i] + '.png')), full_mask)
+            instrument_folder = Path(paths[i]).parent.parent.name
+
+            (to_path / instrument_folder).mkdir(exist_ok=True, parents=True)
+
+            cv2.imwrite(str(to_path / instrument_folder / (Path(paths[i]).stem + '.png')), full_mask)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     arg = parser.add_argument
-    arg('--model_path', type=str, default='data/models/unet_parts_20', help='path to model folder')
+    arg('--model_path', type=str, default='data/models/unet11_binary_20', help='path to model folder')
     arg('--model_type', type=str, default='UNet11', help='network architecture',
-        choices=['UNet11', 'UNet16', 'LinkNet34'])
+        choices=['UNet', 'UNet11', 'UNet16', 'LinkNet34'])
     arg('--output_path', type=str, help='path to save images', default='.')
     arg('--batch-size', type=int, default=4)
-    arg('--fold', type=int, default=0)
+    arg('--fold', type=int, default=0, choices=[0, 1, 2, 3, -1], help='-1: all folds')
     arg('--problem_type', type=str, default='parts', choices=['binary', 'parts', 'instruments'])
     arg('--workers', type=int, default=8)
 
     args = parser.parse_args()
 
-    _, file_names = get_split(args.fold)
-    model = get_model(str(Path(args.model_path).joinpath('model_{fold}.pt'.format(fold=args.fold))),
-                      model_type=args.model_type, problem_type=args.problem_type)
+    if args.fold == -1:
+        for fold in [0, 1, 2, 3]:
+            _, file_names = get_split(fold)
+            model = get_model(str(Path(args.model_path).joinpath('model_{fold}.pt'.format(fold=fold))),
+                              model_type=args.model_type, problem_type=args.problem_type)
 
-    print('num file_names = {}'.format(len(file_names)))
+            print('num file_names = {}'.format(len(file_names)))
 
-    output_path = Path(args.output_path) / str(args.fold)
-    output_path.mkdir(exist_ok=True, parents=True)
+            output_path = Path(args.output_path)
+            output_path.mkdir(exist_ok=True, parents=True)
 
-    predict(model, file_names, args.batch_size, output_path, problem_type=args.problem_type)
+            predict(model, file_names, args.batch_size, output_path, problem_type=args.problem_type)
+    else:
+        _, file_names = get_split(args.fold)
+        model = get_model(str(Path(args.model_path).joinpath('model_{fold}.pt'.format(fold=args.fold))),
+                          model_type=args.model_type, problem_type=args.problem_type)
+
+        print('num file_names = {}'.format(len(file_names)))
+
+        output_path = Path(args.output_path)
+        output_path.mkdir(exist_ok=True, parents=True)
+
+        predict(model, file_names, args.batch_size, output_path, problem_type=args.problem_type)
+
