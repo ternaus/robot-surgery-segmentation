@@ -56,7 +56,7 @@ it removed unnessery part of images and make appropriate image resolutions.
 
 | Model            |Mean IOU   | Mean Dice          | Inference time (512x512) | Model Download Link |
 |------------------|-----------|--------------------|--------------------------|---------------------|
-| U-Net            | in prog.  | in prog.           | 28 ms.                   | [Dropbox](https://www.dropbox.com/)|
+| U-Net            | 15.80     | 23.59              | 28 ms.                   | [Dropbox](https://www.dropbox.com/)|
 | Ternaus-Net11    | 34.61     | 45.86              | 50 ms.                   | in prog.            |
 | Ternaus-Net16    | in prog.  | in prog.           | 50 ms.                   | in prog.            |
 | Link-Net         | 22.47     | 24.71              | 50 ms.                   | in prog.            |
