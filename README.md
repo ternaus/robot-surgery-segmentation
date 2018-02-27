@@ -52,7 +52,7 @@ it removed unnessery part of images and make appropriate image resolutions.
 | Ternaus-Net16    | in prog.  | in prog.           | 50 ms.                   | in prog.            |
 | Link-Net         | in prog.  | in prog.           | 50 ms.                   | in prog.            |
 
-### multi-class Segmentation (3 different instruments)
+### multi-class Segmentation (7 different instruments)
 
 | Model            |Mean IOU   | Mean Dice          | Inference time (512x512) | Model Download Link |
 |------------------|-----------|--------------------|--------------------------|---------------------|
