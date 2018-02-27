@@ -38,14 +38,14 @@ it removed unnessery part of images and make appropriate image resolutions.
 | Model            |Mean IOU   | Mean Dice          | Inference time (512x512) | Model Download Link |
 |------------------|-----------|--------------------|--------------------------|---------------------|
 | U-Net            | in prog.  | in prog.           | 28 ms.                   | [Dropbox](https://drive.google.com/)|
-| Ternaus-Net11    | 80.58     | in prog.           | 50 ms.                   | [google drive](https://drive.google.com/drive/folders/1PfQ-0QDURIvf6WpvllC_3sm0JInMRB4O)            |
+| Ternaus-Net11    | 80.58     | 87.51              | 50 ms.                   | [google drive](https://drive.google.com/drive/folders/1PfQ-0QDURIvf6WpvllC_3sm0JInMRB4O)            |
 | Ternaus-Net16    | in prog.  | in prog.           | 50 ms.                   |             |
-| Link-Net         | 81.81     | in prog.           | 50 ms.                   | [google drive](https://drive.google.com/drive/folders/12OXFy82Z_x1Y1Ly1EKa43r6Jd468m6SE)      |
+| Link-Net         | 81.81     | 88.31              | 50 ms.                   | [google drive](https://drive.google.com/drive/folders/12OXFy82Z_x1Y1Ly1EKa43r6Jd468m6SE)      |
 
 
 ### multi-class Segmentation (3 parts of an instrument)
 
-| Model            |Mean IOU   | Mean pix. accuracy | Inference time (512x512) | Model Download Link |
+| Model            |Mean IOU   | Mean Dice          | Inference time (512x512) | Model Download Link |
 |------------------|-----------|--------------------|--------------------------|---------------------|
 | U-Net            | in prog.  | in prog.           | 28 ms.                   | [Dropbox](https://www.dropbox.com/)|
 | Ternaus-Net11    | in prog.  | in prog.           | 50 ms.                   | in prog.            |
@@ -54,7 +54,7 @@ it removed unnessery part of images and make appropriate image resolutions.
 
 ### multi-class Segmentation (3 different instruments)
 
-| Model            |Mean IOU   | Mean pix. accuracy | Inference time (512x512) | Model Download Link |
+| Model            |Mean IOU   | Mean Dice          | Inference time (512x512) | Model Download Link |
 |------------------|-----------|--------------------|--------------------------|---------------------|
 | U-Net            | in prog.  | in prog.           | 28 ms.                   | [Dropbox](https://www.dropbox.com/)|
 | Ternaus-Net11    | in prog.  | in prog.           | 50 ms.                   | in prog.            |
