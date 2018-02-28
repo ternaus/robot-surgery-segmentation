@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 import torch.backends.cudnn as cudnn
 import torch.backends.cudnn
 
-from models import UNet11, LinkNet34, UNet
+from models import UNet11, LinkNet34, UNet, UNet16
 from loss import LossBinary, LossMulti
 from dataset import RoboticsDataset
 import utils
@@ -54,6 +54,8 @@ def main():
         model = UNet(num_classes=num_classes)
     elif args.model == 'UNet11':
         model = UNet11(num_classes=num_classes, pretrained='vgg')
+    elif args.model == 'UNet16':
+        model = UNet16(num_classes=num_classes, pretrained='vgg')
     elif args.model == 'LinkNet34':
         model = LinkNet34(num_classes=num_classes, pretrained=True)
     else:
