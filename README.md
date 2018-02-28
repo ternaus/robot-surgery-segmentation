@@ -39,7 +39,7 @@ it removed unnessery part of images and make appropriate image resolutions.
 |------------------|-----------|--------------------|--------------------------|---------------------|
 | U-Net            | 75.44     | 84.37              | 28 ms.                   | [Dropbox](https://drive.google.com/)|
 | Ternaus-Net11    | 81.14     | 88.07              | 50 ms.                   | [google drive](https://drive.google.com/drive/folders/1PfQ-0QDURIvf6WpvllC_3sm0JInMRB4O)            |
-| Ternaus-Net16    | in prog.  | in prog.           | 50 ms.                   |             |
+| Ternaus-Net16    | 83.60     | 90.01              | 50 ms.                   |             |
 | Link-Net         | 82.36     | 88.87              | 50 ms.                   | [google drive](https://drive.google.com/drive/folders/12OXFy82Z_x1Y1Ly1EKa43r6Jd468m6SE)      |
 
 
