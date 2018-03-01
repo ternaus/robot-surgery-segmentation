@@ -58,5 +58,5 @@ it removed unnessery part of images and make appropriate image resolutions.
 |------------------|-----------|--------------------|---------------------------|---------------------|
 | U-Net            | 15.80     | 23.59              | 122 ms.                   | [Dropbox](https://www.dropbox.com/)|
 | Ternaus-Net11    | 34.61     | 45.86              | 173 ms.                   | in prog.            |
-| Ternaus-Net16    | in prog.  | in prog.           | 50 ms.                    | in prog.            |
+| Ternaus-Net16    | 33.78     | 44.95              | 275 ms.                   | in prog.            |
 | Link-Net         | 22.47     | 24.71              | 177 ms.                   | in prog.            |
