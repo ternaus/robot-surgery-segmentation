@@ -5,7 +5,7 @@ import numpy as np
 from os import listdir
 
 
-ROOT = "data/train/instrument_dataset_2"
+ROOT = "data/train/instrument_dataset_6"
 PHOTO_DIR = join(ROOT, "left_frames")
 GROUND_TRUTH_DIR = join(ROOT, "ground_truth")
 LABEL_DIRS = [l_d for l_d in listdir(GROUND_TRUTH_DIR) if isdir(join(GROUND_TRUTH_DIR, l_d))]
@@ -14,10 +14,10 @@ ALPHA = 0.5
 SCALE = 0.25
 MODES = ["ORIGINAL", "PARTS", "TYPE", "BINARY"]
 
-RED, GREEN, BLUE, YELLOW, PURPLE, CYAN, LIME = (0, 0, 255), (0, 255, 0), (255, 0, 0), (0, 255,255), \
-                                                (128, 0, 128), (255, 255, 0), (0, 255, 0)
+RED, GREEN, BLUE, YELLOW, PURPLE, CYAN, LIME, MAGENTA = (0, 0, 255), (0, 255, 0), (255, 0, 0), (0, 255,255), \
+                                                (128, 0, 128), (255, 255, 0), (0, 255, 0), (255, 0, 255)
 type_labels = {
-    "Bipolar": RED,
+    "Bipolar": MAGENTA,
     "Prograsp": GREEN,
     "Needle": BLUE,
     "Sealer": YELLOW,
@@ -28,10 +28,10 @@ type_labels = {
 part_labels = {
     10: BLUE,
     20: YELLOW,
-    30: RED,
+    30: MAGENTA,
     40: GREEN,
 }
-binary_label = GREEN
+binary_label = BLUE
 LEFT, TOP = 328, 37
 RIGHT, BOTTOM = 1591, 1046
 

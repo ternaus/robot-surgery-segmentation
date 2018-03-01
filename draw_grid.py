@@ -4,42 +4,41 @@ import numpy as np
 from os import listdir
 
 
-DATASET_NUM = 1
-FRAME_NUM = 112
+MODES = ["ORIGINAL", "BINARY", "PARTS", "INSTRUMENTS"]
+MODELS = ["GROUND_TRUTH", "LINKNET", "UNET", "UNET11", "UNET16"]
 
-FRAME = "frame{:03d}.png".format(FRAME_NUM)
-DATASET = "instrument_dataset_" + str(DATASET_NUM)
-PHOTO_DIR = join("data/train", DATASET, "left_frames")
-GROUND_TRUTH_DIR = join("data/train", DATASET, "ground_truth")
-LABEL_DIRS = [l_d for l_d in listdir(GROUND_TRUTH_DIR) if isdir(join(GROUND_TRUTH_DIR, l_d))]
-PREDICTIONS_DIR = "predictions"
-
-SCALE = 0.25
+SCALE = 0.125
 GAP = 5
 LEFT, TOP = 320, 28
 RIGHT, BOTTOM = LEFT + 1280, TOP + 1024
 
-N_ROWS = 4
-N_COLUMNS = 5
+N_ROWS = len(MODES)
+N_COLUMNS = len(MODELS)
 
 W = int((RIGHT - LEFT) * SCALE)
 H = int((BOTTOM - TOP) * SCALE)
 
-MODES = ["ORIGINAL", "BINARY", "PARTS", "INSTRUMENTS"]
-# MODELS = ["GROUND_TRUTH", "LINKNET", "UNET", "UNET11", "UNET16"]
-MODELS = ["GROUND_TRUTH", "LINKNET", "UNET", "UNET11", "UNET11"]
-
 THRESHOLD = 128
-RED, GREEN, BLUE, YELLOW, PURPLE, CYAN, LIME, MAGENTA = (0, 0, 255), (0, 255, 0), (255, 0, 0), (0, 255,255), \
-                                                (128, 0, 128), (255, 255, 0), (0, 255, 0), (255, 0, 255)
+WHITE, RED, GREEN, BLUE, YELLOW, PURPLE, CYAN, LIME, MAGENTA = (255, 255, 255), (0, 0, 255), (0, 255, 0), \
+                                                               (255, 0, 0), (0, 255, 255), (128, 0, 128), \
+                                                               (255, 255, 0), (0, 255, 0), (255, 0, 255)
+# type_labels = {
+#     "Bipolar": MAGENTA,
+#     "Prograsp": GREEN,
+#     "Needle": BLUE,
+#     "Sealer": YELLOW,
+#     "Grasp": PURPLE,
+#     "Scissors": LIME,
+#     "Other": CYAN,
+# }
 type_labels = {
     "Bipolar": MAGENTA,
-    "Prograsp": GREEN,
-    "Needle": BLUE,
+    "Prograsp": WHITE,
+    "Needle": PURPLE,
     "Sealer": YELLOW,
-    "Grasp": PURPLE,
+    "Grasp": BLUE,
     "Scissors": LIME,
-    "Other": CYAN,
+    "Other": RED,
 }
 type_labels_preds = {
     1 * 32: type_labels["Bipolar"],
@@ -52,9 +51,9 @@ type_labels_preds = {
 }
 part_labels = {
     10: BLUE,
-    20: YELLOW,
+    20: RED,
     30: MAGENTA,
-    40: GREEN,
+    # 40: GREEN,
 }
 part_labels_preds = {
     1 * 85: part_labels[10],
@@ -96,14 +95,25 @@ def get_picture(mode, model):
     return cv2.resize(image, None, fx=SCALE, fy=SCALE, interpolation=cv2.INTER_CUBIC)
 
 
-grid = np.ones((H * N_ROWS + GAP * (N_ROWS - 1), W * N_COLUMNS + GAP * (N_COLUMNS - 1), 3)) * 255
+DATASET_NUM = 1
+FRAME_NUM = 1
+for DATASET_NUM in range(1, 9):
+    for FRAME_NUM in range(1, 226, 20):
+        FRAME = "frame{:03d}.png".format(FRAME_NUM)
+        DATASET = "instrument_dataset_" + str(DATASET_NUM)
+        PHOTO_DIR = join("data/train", DATASET, "left_frames")
+        GROUND_TRUTH_DIR = join("data/train", DATASET, "ground_truth")
+        LABEL_DIRS = [l_d for l_d in listdir(GROUND_TRUTH_DIR) if isdir(join(GROUND_TRUTH_DIR, l_d))]
+        PREDICTIONS_DIR = "predictions"
 
-for j, model in enumerate(MODELS):
-    for i, mode in enumerate(MODES):
-        x = j * (W + GAP)
-        y = i * (H + GAP)
-        grid[y: y + H, x: x + W] = get_picture(mode, model)
+        grid = np.ones((H * N_ROWS + GAP * (N_ROWS - 1), W * N_COLUMNS + GAP * (N_COLUMNS - 1), 3)) * 255
 
-cv2.imwrite("images/grid.png", grid)
+        for j, model in enumerate(MODELS):
+            for i, mode in enumerate(MODES):
+                x = j * (W + GAP)
+                y = i * (H + GAP)
+                grid[y: y + H, x: x + W] = get_picture(mode, model)
+
+        cv2.imwrite("images/grid-{}-{}.png".format(DATASET_NUM, FRAME_NUM), grid)
 
 
