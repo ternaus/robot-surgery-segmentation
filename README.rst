@@ -188,8 +188,9 @@ Demo Example
 ----------
 You can easily start to use our models from the following demo example
 ::
-
-   Demo.ipynb
+    Demo.ipynb
+   
+..  _`Demo.ipynb`: https://github.com/ternaus/robot-surgery-segmentation/blob/master/Demo.ipynb
 
 .. _`Alexander Rakhlin`: https://www.linkedin.com/in/alrakhlin/
 .. _`Alexey Shvets`: https://www.linkedin.com/in/alexey-shvets-b0215263/
