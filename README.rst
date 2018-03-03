@@ -93,7 +93,7 @@ For binary segmentation the best results is achieved by TernausNet-16 with IoU=0
 .. table:: Segmentation results per task. Intersection over Union, Dice coefficient and inference time, ms.
 
     ============= ========= ========= ========= ========= ========= ====== ========= ========= =======
-    |             Binary                        Parts                      Instruments
+    Task:         Binary segmentation           Parts segmentation         Instrument segmentation
     ------------- ----------------------------- -------------------------- ---------------------------
     Model         IOU, %    Dice, %   Time      IOU, %    Dice, %   Time     IOU, %  Dice, %   Time
     ============= ========= ========= ========= ========= ========= ====== ========= ========= =======
