@@ -114,7 +114,7 @@ Dependencies
 
 How to run
 ----------
-**TODO**
+
 
 For command line options use ``-h, --help``. Default directory structure is:
 
@@ -142,6 +142,48 @@ For command line options use ``-h, --help``. Default directory structure is:
     ├── notebooks
     ├── src
     └── predictions
+
+Preprocessing
+-------------
+As a preprocessing step we cropped black unindormative border from all frames with a file ``prepare_data.py`` that creates 
+
+folder ``data/cropped_train.py`` with masks and images of the smaller size that are used for training.
+
+Training
+--------
+The main file that was used for training is ``train.py``.
+
+Running ``python train.py --help`` will return set of possible input parameters.
+
+To train all models bash scripts similar to one below were used:
+
+::
+
+    #!/bin/bash
+
+    for i in 0 1 2 3
+    do
+       python train.py --device-ids 0,1,2,3 --batch-size 16 --fold $i --workers 12 --lr 0.0001 --n-epochs 10 --type binary --jaccard-weight 1
+       python train.py --device-ids 0,1,2,3 --batch-size 16 --fold $i --workers 12 --lr 0.00001 --n-epochs 20 --type binary --jaccard-weight 1
+    done
+
+
+Mask generation
+---------------
+The main file that was used to generate masks is ``evaluate.py``
+Running `python generate_masks.py --help` will return set of possible input parameters.
+
+Example:
+:: 
+    python generate_masks.py --output_path predictions/unet16/binary --model_type UNet16 --problem_type binary --model_path data/models/unet16_binary_20 --fold -1 --batch-size 4
+
+Evaluation
+----------
+
+::
+
+    python evaluate.py --target_path predictions/unet16 --problem_type binary --train_path data/cropped_train
+
 
 You can preprocess the data independently, or use downloaded features. In the former case place the competition microscopy images into ``data\train|test`` directories. Please note the competition rules disallow us to redistribute the data.
 
