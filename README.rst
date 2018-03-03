@@ -1,5 +1,5 @@
 ===========================================
-MICCAI 2017 Robotic Instrument Segmentation
+Winning solution for MICCAI 2017 Robotic Instrument Segmentation
 ===========================================
 
 Our solution for `MICCAI 2017 Robotic Instrument Segmentation Sub-Challenge`_.
@@ -116,7 +116,9 @@ How to run
 ----------
 
 
-For command line options use ``-h, --help``. Default directory structure is:
+For command line options use ``-h, --help``. 
+
+The dataset is organized in the folloing way:
 
 ::
 
@@ -138,16 +140,20 @@ For command line options use ``-h, --help``. Default directory structure is:
     │       │   ├── left_frames
     │       │   └── right_frames
     │       │   ...................
-    │ 
-    ├── notebooks
-    ├── src
-    └── predictions
+
+The training dataset contains only 8 videos with 255 frames each. Inside each video all frames are correlated, so, for 4-fold cross validation of our experiments, we split data using this dependance i.e utilize whole video for the validation. In such a case, we try to make every fold to contain more or less equal number of instruments. The test dataset consists of 8x75-frame sequences containing footage sampled immediately after each training sequence and 2 full 300-frame sequences, sampled at the same rate as the training set. Under the terms of the challenge, participants should exclude the corresponding training set when evaluating on one of the 75-frame sequences. 
 
 Preprocessing
 -------------
-As a preprocessing step we cropped black unindormative border from all frames with a file ``prepare_data.py`` that creates 
+As a preprocessing step we cropped black unindormative border from all frames with a file 
+```
+prepare_data.py
+```
+that creates folder ``data/cropped_train.py`` with masks and images of the smaller size that are used for training. Then, the split for 4-fold cross-validation is implemented using 
+```
+prepare_train_val
+```
 
-folder ``data/cropped_train.py`` with masks and images of the smaller size that are used for training.
 
 Training
 --------
