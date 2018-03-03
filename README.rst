@@ -181,9 +181,14 @@ Evaluation
 
     python evaluate.py --target_path predictions/unet16 --problem_type binary --train_path data/cropped_train
 
-
 Our results can be improved further by few percentages using simple rules such as additional augmentation of train images and train the model for longer time. In addition, the cyclic learning rate or cosine annealing could be also applied. To do it one can use our pre-trained weights as initialization. To improve test prediction TTA technique could be used as well as averaging prediction from all folds.
 
+
+Example:
+----------
+You can easily start to use our models from the following demo example
+
+``Demo.ipynb``
 
 .. _`Alexander Rakhlin`: https://www.linkedin.com/in/alrakhlin/
 .. _`Alexey Shvets`: https://www.linkedin.com/in/alexey-shvets-b0215263/
