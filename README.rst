@@ -177,6 +177,8 @@ Evaluation
 
 ::
 
+    python evaluate.py --target_path predictions/unet16 --problem_type binary --train_path data/cropped_train
+
 
 
 
