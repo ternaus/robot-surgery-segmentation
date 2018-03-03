@@ -126,7 +126,7 @@ The dataset is organized in the folloing way:
     │   │   ├── instrument_dataset_1
     │   │   │   ├── left_frames
     │   │   │   └── right_frames
-    |   |   │   ................... 
+    |   |   ....................... 
     │   └── train
     │       ├── instrument_dataset_1
     │       │   ├── ground_truth
@@ -136,7 +136,7 @@ The dataset is organized in the folloing way:
     │       │   │   └── Right_Prograsp_Forceps_labels
     │       │   ├── left_frames
     │       │   └── right_frames
-    │       │   ...................
+    │       .......................
 
 The training dataset contains only 8 videos with 255 frames each. Inside each video all frames are correlated, so, for 4-fold cross validation of our experiments, we split data using this dependance i.e utilize whole video for the validation. In such a case, we try to make every fold to contain more or less equal number of instruments. The test dataset consists of 8x75-frame sequences containing footage sampled immediately after each training sequence and 2 full 300-frame sequences, sampled at the same rate as the training set. Under the terms of the challenge, participants should exclude the corresponding training set when evaluating on one of the 75-frame sequences. 
 
