@@ -191,8 +191,7 @@ Our results can be improved further by few percentages using simple rules such a
 Demo Example
 ----------
 You can easily start to use our models from the following demo example
-::
-    `Demo.ipynb`_
+  `Demo.ipynb`_
    
 ..  _`Demo.ipynb`: https://github.com/ternaus/robot-surgery-segmentation/blob/master/Demo.ipynb
 .. _`Alexander Rakhlin`: https://www.linkedin.com/in/alrakhlin/
