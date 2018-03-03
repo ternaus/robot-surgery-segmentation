@@ -54,8 +54,11 @@ Training
 
 We use Jaccard index (Intersection Over Union) as the evaluation metric. It can be interpreted as a similarity measure between a finite number of sets. For two sets A and B, it can be defined as following:
 
-.. figure:: images/iou.gif
-    :align: center
+.. raw:: html
+
+    <figure>
+        <img src="images/iou.gif" align="center"/>
+    </figure>
 
 Since an image consists of pixels, the expression can be adapted for discrete objects in the following way:
 
@@ -76,10 +79,12 @@ Results
 
 For binary segmentation the best results is achieved by TernausNet-16 with IoU=0.836 and Dice=0.901. These are the best values reported in the literature up to now (`Pakhomov`_, `Garcia`_). Next, we consider multi-class segmentation of different parts of instruments. As before, the best results reveals TernausNet-16 with IoU=0.655 and Dice=0.760. For the multi-class instrument segmentation task the results look less optimistic. In this case the best model is TernausNet-11 with IoU=0.346 and Dice=0.459 for 7 class segmentation. Lower performance can be explained by the relatively small dataset size. There are 7 instrument classes and some of them appear just few times in the training dataset. Nevertheless, in the competition we achieved the best performance in this sub-category too.
 
-.. figure:: images/grid-1-41.png
-    :width: 40 %
+.. raw:: html
 
-    Comparison between several architectures for binary and multi-class segmentation.
+    <figure>
+        <img src="images/grid-1-41.png" width="35%" height="auto" align="center"/>
+        <figcaption>Comparison between several architectures for binary and multi-class segmentation.</figcaption>
+    </figure>
 
 |
 |
@@ -184,4 +189,3 @@ You can preprocess the data independently, or use downloaded features. In the fo
 .. |y| image:: images/y.gif
 .. |y_hat| image:: images/y_hat.gif
 .. |i| image:: images/i.gif
-
