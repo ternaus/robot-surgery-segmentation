@@ -1,7 +1,6 @@
 import torch
 import numpy as np
 import cv2
-import jpeg4py
 from torch.utils.data import Dataset
 from pathlib import Path
 import prepare_data
@@ -41,7 +40,8 @@ def to_float_tensor(img):
 
 
 def load_image(path):
-    return jpeg4py.JPEG(str(path)).decode()
+    img = cv2.imread(str(path))
+    return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
 
 def load_mask(path, problem_type):
