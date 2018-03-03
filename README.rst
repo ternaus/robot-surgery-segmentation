@@ -128,6 +128,7 @@ For command line options use ``-h, --help``. Default directory structure is:
     │   │   ├── instrument_dataset_1
     │   │   │   ├── left_frames
     │   │   │   └── right_frames
+    |   |   │   ................... 
     │   └── train
     │       ├── instrument_dataset_1
     │       │   ├── ground_truth
