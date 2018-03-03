@@ -108,7 +108,7 @@ Dependencies
 **TODO**
 
 * Python 3
-* Pytorch
+* PyTorch
 * Standard scientific Python stack: ``NumPy, Pandas, SciPy, scikit-learn``.
 * Other libraries: ``tqdm``
 
