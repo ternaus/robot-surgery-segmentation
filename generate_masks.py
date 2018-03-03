@@ -31,8 +31,8 @@ img_transform = DualCompose([
 def get_model(model_path, model_type='unet11', problem_type='binary'):
     """
 
-    :param model_path: 'UNet16', 'UNet11', 'LinkNet34'
-    :param model_type:
+    :param model_path:
+    :param model_type: 'UNet', 'UNet16', 'UNet11', 'LinkNet34'
     :param problem_type: 'binary', 'parts', 'instruments'
     :return:
     """
@@ -138,4 +138,3 @@ if __name__ == '__main__':
         output_path.mkdir(exist_ok=True, parents=True)
 
         predict(model, file_names, args.batch_size, output_path, problem_type=args.problem_type)
-
