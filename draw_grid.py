@@ -95,8 +95,6 @@ def get_picture(mode, model):
     return cv2.resize(image, None, fx=SCALE, fy=SCALE, interpolation=cv2.INTER_CUBIC)
 
 
-DATASET_NUM = 1
-FRAME_NUM = 1
 for DATASET_NUM in range(1, 9):
     for FRAME_NUM in range(1, 226, 20):
         FRAME = "frame{:03d}.png".format(FRAME_NUM)
