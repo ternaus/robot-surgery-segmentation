@@ -115,9 +115,6 @@ Dependencies
 How to run
 ----------
 
-
-For command line options use ``-h, --help``. 
-
 The dataset is organized in the folloing way:
 
 ::
@@ -146,13 +143,10 @@ The training dataset contains only 8 videos with 255 frames each. Inside each vi
 Preprocessing
 -------------
 As a preprocessing step we cropped black unindormative border from all frames with a file 
-```
+``
 prepare_data.py
-```
-that creates folder ``data/cropped_train.py`` with masks and images of the smaller size that are used for training. Then, the split for 4-fold cross-validation is implemented using 
-```
-prepare_train_val
-```
+``
+that creates folder ``data/cropped_train.py`` with masks and images of the smaller size that are used for training. Then, the split for 4-fold cross-validation is implemented using ``prepare_train_val``.
 
 
 Training
@@ -161,7 +155,7 @@ The main file that was used for training is ``train.py``.
 
 Running ``python train.py --help`` will return set of possible input parameters.
 
-To train all models bash scripts similar to one below were used:
+To train all models we used the folloing scripts :
 
 ::
 
@@ -176,7 +170,7 @@ To train all models bash scripts similar to one below were used:
 
 Mask generation
 ---------------
-The main file that was used to generate masks is ``evaluate.py``
+The main file to generate masks is ``evaluate.py``
 Running `python generate_masks.py --help` will return set of possible input parameters.
 
 Example:
