@@ -167,7 +167,7 @@ To train all models we used the folloing bash script :
 Mask generation
 ---------------
 The main file to generate masks is ``evaluate.py``
-Running `python generate_masks.py --help` will return set of possible input parameters.
+Running ``python generate_masks.py --help`` will return set of possible input parameters.
 
 Example:
 :: 
