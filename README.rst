@@ -151,7 +151,7 @@ The main file that was used for training is ``train.py``.
 
 Running ``python train.py --help`` will return set of possible input parameters.
 
-To train all models we used the folloing scripts :
+To train all models we used the folloing bash script :
 
 ::
 
