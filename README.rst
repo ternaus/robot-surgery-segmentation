@@ -86,6 +86,12 @@ For binary segmentation the best results is achieved by TernausNet-16 with IoU=0
         <figcaption>Comparison between several architectures for binary and multi-class segmentation.</figcaption>
     </figure>
 
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
 |
 |
 |
