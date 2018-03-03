@@ -177,16 +177,6 @@ Evaluation
 
 ::
 
-    python evaluate.py --target_path predictions/unet16 --problem_type binary --train_path data/cropped_train
-
-
-You can preprocess the data independently, or use downloaded features. In the former case place the competition microscopy images into ``data\train|test`` directories. Please note the competition rules disallow us to redistribute the data.
-
-1. Download trained models::
-
-    python download_models.py
-
-2. ...
 
 
 
