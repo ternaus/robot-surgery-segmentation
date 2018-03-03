@@ -149,7 +149,7 @@ Training
 --------
 The main file that is used to train all models -  ``train.py``.
 
-Running ``python train.py --help`` will return set of possible input parameters.
+Running ``python train.py --help`` will return set of all possible input parameters.
 
 To train all models we used the folloing bash script :
 
