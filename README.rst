@@ -22,15 +22,15 @@ Semantic segmentation of robotic instruments is an important problem for the rob
 
 Data
 ----
-The training dataset consists of 8 |times| 225-frame sequences of high resolution stereo camera images acquired from a da Vinci Xi surgical system during several different porcine procedures. Training sequences are provided with 2 Hz frame rate to avoid redundancy. Every video sequence consists of two stereo channels taken from left and right cameras and has a 1920 |times| 1080 pixel resolution in RGB format. To remove black canvas and extract original 1280 |times| 1024 camera images from the frames, an image has to be cropped starting from the pixel at the (320, 28) position. Ground truth labels are provided for left frames only, therefore only left channel images are used for training. The articulated parts of the robotic surgical instruments, such as a rigid shaft, an articulated wrist and claspers have been hand labelled in each frame. Ground truth labels are encoded with numerical values (10, 20, 30, 40, 0) and assigned to each part of an instrument or background. Furthermore, there are instrument type labels that categorize instruments in following categories: left/right prograsp forceps, monopolar curved scissors, large needle driver, and a miscellaneous category for any other surgical instruments.
+The training dataset consists of 8 |times| 225-frame sequences of high resolution stereo camera images acquired from a `da Vinci Xi surgical system`_ during several different porcine procedures. Training sequences are provided with 2 Hz frame rate to avoid redundancy. Every video sequence consists of two stereo channels taken from left and right cameras and has a 1920 |times| 1080 pixel resolution in RGB format. The articulated parts of the robotic surgical instruments, such as a rigid shaft, an articulated wrist and claspers have been hand labelled in each frame. Furthermore, there are instrument type labels that categorize instruments in following categories: left/right prograsp forceps, monopolar curved scissors, large needle driver, and a miscellaneous category for any other surgical instruments.
 
-The test dataset consists of 8 |times| 75-frame sequences containing footage sampled immediately after each training sequence and 2 full 300-frame sequences, sampled at the same rate as the training set. Under the terms of the challenge, participants should exclude the corresponding training set when evaluating on one of the 75-frame sequences.
+.. class:: center
 
     |gif1| |gif2|
     |br|
     |gif3| |gif4|
-
-    Original sequences (top left); binary segmentation, 2-class (top right); parts, 3-class (bottom left); instruments, 7-class (bottom right)
+    |br|
+    Original sequence (top left). Binary segmentation, 2-class (top right). Parts, 3-class (bottom left). Instruments, 7-class (bottom right)
 
 Method
 ------
@@ -55,16 +55,19 @@ Training
 We use Jaccard index (Intersection Over Union) as the evaluation metric. It can be interpreted as a similarity measure between a finite number of sets. For two sets A and B, it can be defined as following:
 
 .. figure:: images/iou.gif
+    :align: center
 
 Since an image consists of pixels, the expression can be adapted for discrete objects in the following way:
 
 .. figure:: images/jaccard.gif
+    :align: center
 
 where |y| and |y_hat| are a binary value (label) and a predicted probability for the pixel |i|, respectively.
 
 Since image segmentation task can also be considered as a pixel classification problem, we additionally use common classification loss functions, denoted as H. For a binary segmentation problem H is a binary cross entropy, while for a multi-class segmentation problem H is a categorical cross entropy.
 
 .. figure:: images/loss.gif
+    :align: center
 
 As an output of a model, we obtain an image, where every pixel value corresponds to a probability of belonging to the area of interest or a class. The size of the output image matches the input image size. For binary segmentation, we use 0.3 as a threshold value (chosen using validation dataset) to binarize pixel probabilities. All pixel values below the specified threshold are set to 0, while all values above the threshold are set to 255 to produce final prediction mask. For multi-class segmentation we use similar procedure, but we assign different integer numbers for each class.
 
@@ -74,7 +77,7 @@ Results
 For binary segmentation the best results is achieved by TernausNet-16 with IoU=0.836 and Dice=0.901. These are the best values reported in the literature up to now (`Pakhomov`_, `Garcia`_). Next, we consider multi-class segmentation of different parts of instruments. As before, the best results reveals TernausNet-16 with IoU=0.655 and Dice=0.760. For the multi-class instrument segmentation task the results look less optimistic. In this case the best model is TernausNet-11 with IoU=0.346 and Dice=0.459 for 7 class segmentation. Lower performance can be explained by the relatively small dataset size. There are 7 instrument classes and some of them appear just few times in the training dataset. Nevertheless, in the competition we achieved the best performance in this sub-category too.
 
 .. figure:: images/grid-1-41.png
-    :scale: 65 %
+    :scale: 55 %
 
     Comparison between several architectures for binary and multi-class segmentation.
 
@@ -87,7 +90,7 @@ For binary segmentation the best results is achieved by TernausNet-16 with IoU=0
     ============= ========= ========= ========= ========= ========= ====== ========= ========= =======
     |             Binary                        Parts                      Instruments
     ------------- ----------------------------- -------------------------- ---------------------------
-    Model         IOU, %    Dice, %   Time      IOU, %    Dice, %   Time     IOU, %    Dice, %   Time
+    Model         IOU, %    Dice, %   Time      IOU, %    Dice, %   Time     IOU, %  Dice, %   Time
     ============= ========= ========= ========= ========= ========= ====== ========= ========= =======
     U-Net         75.44     84.37     93.00     48.41     60.75     106    15.80     23.59     **122**
     TernausNet-11 81.14     88.07     142.00    62.23     74.25     157    **34.61** **45.86** 173
@@ -100,6 +103,7 @@ Dependencies
 **TODO**
 
 * Python 3
+* Pytorch
 * Standard scientific Python stack: ``NumPy, Pandas, SciPy, scikit-learn``.
 * Other libraries: ``tqdm``
 
@@ -150,6 +154,7 @@ You can preprocess the data independently, or use downloaded features. In the fo
 .. _`Vladimir Iglovikov`: https://www.linkedin.com/in/iglovikov/
 .. _`Alexandr A. Kalinin`: https://alxndrkalinin.github.io/
 .. _`MICCAI 2017 Robotic Instrument Segmentation Sub-Challenge`: https://endovissub2017-roboticinstrumentsegmentation.grand-challenge.org/
+.. _`da Vinci Xi surgical system`: https://intuitivesurgical.com/products/da-vinci-xi/
 .. _`TernausNet`: https://arxiv.org/abs/1801.05746
 .. _`U-Net`: https://arxiv.org/abs/1505.04597
 .. _`LinkNet`: https://arxiv.org/abs/1707.03718
