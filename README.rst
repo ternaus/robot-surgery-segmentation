@@ -176,7 +176,11 @@ Example:
 
 Evaluation
 ----------
+The evaluation is different for a binary and multi-class segmentation. 
 
+[1] In the binary segmentation case it calculates jaccard / dice per image / per video and then the predictions are avaraged. 
+
+[2] In the multi-class segmentation case
 ::
 
     python evaluate.py --target_path predictions/unet16 --problem_type binary --train_path data/cropped_train
