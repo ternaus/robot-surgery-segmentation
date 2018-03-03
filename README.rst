@@ -147,7 +147,7 @@ As a preprocessing step we cropped black unindormative border from all frames wi
 
 Training
 --------
-The main file that was used for training is ``train.py``.
+The main file that is used to train all models -  ``train.py``.
 
 Running ``python train.py --help`` will return set of possible input parameters.
 
