@@ -1,8 +1,8 @@
 ===========================================
-Winning solution for MICCAI 2017 Robotic Instrument Segmentation
+MICCAI 2017 Robotic Instrument Segmentation
 ===========================================
 
-Our solution for `MICCAI 2017 Robotic Instrument Segmentation Sub-Challenge`_.
+Here we present our wining solution and its improvement for `MICCAI 2017 Robotic Instrument Segmentation Sub-Challenge`_.
 
 In this work, we describe our winning solution for MICCAI 2017 Endoscopic Vision Sub-Challenge: Robotic Instrument Segmentation and demonstrate further improvement over that result. Our approach is originally based on U-Net network architecture that we improved using state-of-the-art semantic segmentation neural networks known as LinkNet and TernausNet. Our results shows superior performance for a binary  as well as for multi-class robotic instrument segmentation. We believe that our methods can lay a good foundation for the tracking and pose estimation in the vicinity of surgical scenes.
 
