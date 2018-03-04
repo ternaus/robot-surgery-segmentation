@@ -112,6 +112,10 @@ Dependencies
 * PyTorch
 * Standard scientific Python stack: ``NumPy, Pandas, SciPy, scikit-learn``.
 * Other libraries: ``tqdm``
+To install all these packages you can run
+``
+pip3 install -r requirements.txt
+``
 
 
 How to run
