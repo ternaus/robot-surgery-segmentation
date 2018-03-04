@@ -106,16 +106,15 @@ Pre-trained weights for all model of all segmentation tasks can be found at `goo
 
 Dependencies
 ------------
-**TODO**
 
-* Python 3
-* PyTorch
+* Python 3.6
+* PyTorch 
 * Standard scientific Python stack: ``NumPy, Pandas, SciPy, scikit-learn``.
 * Other libraries: ``tqdm``
 To install all these packages you can run
-``
-pip3 install -r requirements.txt
-``
+::
+    pip3 install -r requirements.txt
+
 
 
 How to run
