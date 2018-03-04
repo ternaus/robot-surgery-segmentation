@@ -177,7 +177,7 @@ Example:
     python generate_masks.py --output_path predictions/unet16/binary --model_type UNet16 --problem_type binary --model_path data/models/unet16_binary_20 --fold -1 --batch-size 4
 
 `Evaluation`
-----------
+-
 The evaluation is different for a binary and multi-class segmentation: 
 
 [a] In the case of binary segmentation it calculates jaccard (dice) per image / per video and then the predictions are avaraged. 
