@@ -102,7 +102,7 @@ For binary segmentation the best results is achieved by TernausNet-16 with IoU=0
     LinkNet-34    82.36     88.87     **88.00** 34.55     41.26     **97** 22.47     24.71     177
     ============= ========= ========= ========= ========= ========= ====== ========= ========= =======
 
-Pre-train weights for all model of all sub-tasks can be found at `google drive`_
+Pre-trained weights for all model of all segmentation tasks can be found at `google drive`_
 
 Dependencies
 ------------
