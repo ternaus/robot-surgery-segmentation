@@ -108,12 +108,15 @@ Dependencies
 ------------
 
 * Python 3.6
-* PyTorch 
-* Standard scientific Python stack: ``NumPy, Pandas, SciPy, scikit-learn``.
-* Other libraries: ``tqdm``
-To install all these packages you can run
+* PyTorch 0.3.1
+* TorchVision 0.1.9
+* numpy==1.14.0
+* opencv-python==3.3.0.10
+* tqdm==4.19.4
+
+To install all these dependencies you can run
 ::
-    pip3 install -r requirements.txt
+    pip install -r requirements.txt
 
 
 
