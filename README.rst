@@ -110,9 +110,9 @@ Dependencies
 * Python 3.6
 * PyTorch 0.3.1
 * TorchVision 0.1.9
-* numpy==1.14.0
-* opencv-python==3.3.0.10
-* tqdm==4.19.4
+* numpy 1.14.0
+* opencv-python 3.3.0.10
+* tqdm 4.19.4
 
 To install all these dependencies you can run
 ::
