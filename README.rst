@@ -14,7 +14,7 @@ Team members
 
 Reference Paper
 ---------------
- A. Shvets, A. Rakhlin, A. Kalinin, and V. Iglovikov: Automatic Instrument Segmentation in Robot-Assisted Surgery Using Deep Learning. bioRxiv p. 275867 (2018), `link <https://doi.org/10.1101/275867>`_
+ Shvets A., Rakhlin A., Kalinin A., and Iglovikov V.: Automatic Instrument Segmentation in Robot-Assisted Surgery Using Deep Learning. bioRxiv p. 275867 (2018), `link <https://doi.org/10.1101/275867>`_
 
 Overview
 --------
