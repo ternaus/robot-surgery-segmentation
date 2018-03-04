@@ -142,13 +142,13 @@ The dataset is organized in the folloing way:
 
 The training dataset contains only 8 videos with 255 frames each. Inside each video all frames are correlated, so, for 4-fold cross validation of our experiments, we split data using this dependance i.e utilize whole video for the validation. In such a case, we try to make every fold to contain more or less equal number of instruments. The test dataset consists of 8x75-frame sequences containing footage sampled immediately after each training sequence and 2 full 300-frame sequences, sampled at the same rate as the training set. Under the terms of the challenge, participants should exclude the corresponding training set when evaluating on one of the 75-frame sequences. 
 
-1) Preprocessing
+1. Preprocessing
 ~~~~~~~~~~~~~~~~~~~~~~
 As a preprocessing step we cropped black unindormative border from all frames with a file ``prepare_data.py`` that creates folder ``data/cropped_train.py`` with masks and images of the smaller size that are used for training. Then, to split the dataset for 4-fold cross-validation one can use the file: ``prepare_train_val``.
 
 
-Training
---------
+2. Training
+~~~~~~~~~~~~~~~~~~~~~~
 The main file that is used to train all models -  ``train.py``.
 
 Running ``python train.py --help`` will return set of all possible input parameters.
@@ -166,8 +166,8 @@ To train all models we used the folloing bash script :
     done
 
 
-Mask generation
----------------
+3. Mask generation
+~~~~~~~~~~~~~~~~~~~~~~
 The main file to generate masks is ``generate_masks.py``.
 
 Running ``python generate_masks.py --help`` will return set of all possible input parameters.
@@ -176,8 +176,8 @@ Example:
 :: 
     python generate_masks.py --output_path predictions/unet16/binary --model_type UNet16 --problem_type binary --model_path data/models/unet16_binary_20 --fold -1 --batch-size 4
 
-Evaluation
----------------
+4. Evaluation
+~~~~~~~~~~~~~~~~~~~~~~
 The evaluation is different for a binary and multi-class segmentation: 
 
 [a] In the case of binary segmentation it calculates jaccard (dice) per image / per video and then the predictions are avaraged. 
@@ -186,6 +186,7 @@ The evaluation is different for a binary and multi-class segmentation:
 ::
 
     python evaluate.py --target_path predictions/unet16 --problem_type binary --train_path data/cropped_train
+
 
 Our results can be improved further by few percentages using simple rules such as additional augmentation of train images and train the model for longer time. In addition, the cyclic learning rate or cosine annealing could be also applied. To do it one can use our pre-trained weights as initialization. To improve test prediction TTA technique could be used as well as averaging prediction from all folds.
 
