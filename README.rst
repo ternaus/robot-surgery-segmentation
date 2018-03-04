@@ -178,7 +178,7 @@ Example:
 
 Evaluation
 ----------
-The evaluation is different for a binary and multi-class segmentation. 
+The evaluation is different for a binary and multi-class segmentation: 
 
 [1] In the case of binary segmentation it calculates jaccard (dice) per image / per video and then the predictions are avaraged. 
 
