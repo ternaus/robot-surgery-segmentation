@@ -178,9 +178,9 @@ Evaluation
 ----------
 The evaluation is different for a binary and multi-class segmentation. 
 
-[1] In the binary segmentation case it calculates jaccard / dice per image / per video and then the predictions are avaraged. 
+[1] In the case of binary segmentation it calculates jaccard (dice) per image / per video and then the predictions are avaraged. 
 
-[2] In the multi-class segmentation case
+[2] In the case of multi-class segmentation it calculates jaccard (dice) for every class independently then avaraged them for each image and then for every video
 ::
 
     python evaluate.py --target_path predictions/unet16 --problem_type binary --train_path data/cropped_train
@@ -190,7 +190,7 @@ Our results can be improved further by few percentages using simple rules such a
 
 Demo Example
 ----------
-You can easily start to work with our models using the demonstration example
+You can easily start working with our models using the demonstration example
   `Demo.ipynb`_
    
 ..  _`Demo.ipynb`: https://github.com/ternaus/robot-surgery-segmentation/blob/master/Demo.ipynb
