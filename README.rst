@@ -205,7 +205,7 @@ You can easily start working with our models using the demonstration example
   `Demo.ipynb`_
    
 Citation
-~~~~~~~~~~~~~~~~~~~~~~
+----------
 
 ::
 
