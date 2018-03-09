@@ -206,7 +206,8 @@ You can easily start working with our models using the demonstration example
    
 Citation
 ~~~~~~~~~~~~~~~~~~~~~~
-Bla bla ::
+
+::
   @article{shvets2018automatic,
   title={Automatic Instrument Segmentation in Robot-Assisted Surgery Using Deep Learning},
   author={Shvets, Alexey and Rakhlin, Alexander and Kalinin, Alexandr A and Iglovikov, Vladimir},
