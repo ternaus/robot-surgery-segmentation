@@ -203,6 +203,15 @@ Our results can be improved further by few percentages using simple rules such a
 ~~~~~~~~~~~~~~~~~~~~~~
 You can easily start working with our models using the demonstration example
   `Demo.ipynb`_
+  
+  Cite it
+----------
+  @article{shvets2018automatic,
+  title={Automatic Instrument Segmentation in Robot-Assisted Surgery Using Deep Learning},
+  author={Shvets, Alexey and Rakhlin, Alexander and Kalinin, Alexandr A and Iglovikov, Vladimir},
+  journal={arXiv preprint arXiv:1803.01207},
+  year={2018}
+}
    
 ..  _`Demo.ipynb`: https://github.com/ternaus/robot-surgery-segmentation/blob/master/Demo.ipynb
 .. _`Alexander Rakhlin`: https://www.linkedin.com/in/alrakhlin/
