@@ -203,10 +203,9 @@ Our results can be improved further by few percentages using simple rules such a
 ~~~~~~~~~~~~~~~~~~~~~~
 You can easily start working with our models using the demonstration example
   `Demo.ipynb`_
-  
-  
-  Citation
-----------
+   
+Citation
+~~~~~~~~~~~~~~~~~~~~~~
 ::
   @article{shvets2018automatic,
   title={Automatic Instrument Segmentation in Robot-Assisted Surgery Using Deep Learning},
