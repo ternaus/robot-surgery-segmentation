@@ -207,7 +207,7 @@ You can easily start working with our models using the demonstration example
 Citation
 ----------
 
-::
+If you found this work useflul in your research project, please cite it as::
 
     @article{shvets2018automatic,
     title={Automatic Instrument Segmentation in Robot-Assisted Surgery Using Deep Learning},
