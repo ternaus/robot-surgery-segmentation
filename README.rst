@@ -206,13 +206,14 @@ You can easily start working with our models using the demonstration example
   
   Cite it
 ----------
+``
   @article{shvets2018automatic,
   title={Automatic Instrument Segmentation in Robot-Assisted Surgery Using Deep Learning},
   author={Shvets, Alexey and Rakhlin, Alexander and Kalinin, Alexandr A and Iglovikov, Vladimir},
   journal={arXiv preprint arXiv:1803.01207},
   year={2018}
 }
-   
+``   
 ..  _`Demo.ipynb`: https://github.com/ternaus/robot-surgery-segmentation/blob/master/Demo.ipynb
 .. _`Alexander Rakhlin`: https://www.linkedin.com/in/alrakhlin/
 .. _`Alexey Shvets`: https://www.linkedin.com/in/alexey-shvets-b0215263/
