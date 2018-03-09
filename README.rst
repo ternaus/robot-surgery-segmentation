@@ -12,9 +12,17 @@ Team members
 ------------
 `Alexey Shvets`_, `Alexander Rakhlin`_, `Alexandr A. Kalinin`_, `Vladimir Iglovikov`_
 
-Reference Paper
----------------
-Shvets A., Rakhlin A., Kalinin A., and V. Iglovikov: Automatic Instrument Segmentation in Robot-Assisted Surgery Using Deep Learning. bioRxiv p. 275867 (2018), `link <https://doi.org/10.1101/275867>`_
+Citation
+----------
+
+If you find this work useful for your publications, please consider citing::
+
+    @article{shvets2018automatic,
+    title={Automatic Instrument Segmentation in Robot-Assisted Surgery Using Deep Learning},
+    author={Shvets, Alexey and Rakhlin, Alexander and Kalinin, Alexandr A and Iglovikov, Vladimir},
+    journal={arXiv preprint arXiv:1803.01207},
+    year={2018}
+    }
 
 Overview
 --------
@@ -203,7 +211,7 @@ Our results can be improved further by few percentages using simple rules such a
 ~~~~~~~~~~~~~~~~~~~~~~
 You can easily start working with our models using the demonstration example
   `Demo.ipynb`_
-   
+
 ..  _`Demo.ipynb`: https://github.com/ternaus/robot-surgery-segmentation/blob/master/Demo.ipynb
 .. _`Alexander Rakhlin`: https://www.linkedin.com/in/alrakhlin/
 .. _`Alexey Shvets`: https://www.linkedin.com/in/alexey-shvets-b0215263/
