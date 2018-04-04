@@ -214,7 +214,7 @@ You can easily start working with our models using the demonstration example
 
 ..  _`Demo.ipynb`: https://github.com/ternaus/robot-surgery-segmentation/blob/master/Demo.ipynb
 .. _`Alexander Rakhlin`: https://www.linkedin.com/in/alrakhlin/
-.. _`Alexey Shvets`: https://www.linkedin.com/in/alexey-shvets-b0215263/
+.. _`Alexey Shvets`: https://www.linkedin.com/in/shvetsiya/
 .. _`Vladimir Iglovikov`: https://www.linkedin.com/in/iglovikov/
 .. _`Alexandr A. Kalinin`: https://alxndrkalinin.github.io/
 .. _`MICCAI 2017 Robotic Instrument Segmentation Sub-Challenge`: https://endovissub2017-roboticinstrumentsegmentation.grand-challenge.org/
