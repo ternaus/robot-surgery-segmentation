@@ -54,8 +54,8 @@ class LossMulti:
                 jaccard_output = outputs[:, cls].exp()
                 intersection = (jaccard_output * jaccard_target).sum()
 
-                union = jaccard_output.sum() + jaccard_target.sum() + eps
-                loss += (1 - intersection / (union - intersection)) * cls_weight
+                union = jaccard_output.sum() + jaccard_target.sum()
+                loss += (1 - (intersection + eps) / (union - intersection + eps)) * cls_weight
 
             loss /= (1 + self.jaccard_weight)
         return loss
