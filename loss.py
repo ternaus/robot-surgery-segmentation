@@ -45,9 +45,9 @@ class LossMulti:
         self.num_classes=num_classes
 
     def __call__(self, outputs, targets):
-        loss = self.nll_loss(outputs, targets)
-        if self.jaccard_weight:
-            cls_weight = self.jaccard_weight / self.num_classes
+        loss = (1 - self.jaccard_weight) * self.nll_loss(outputs, targets)
+        
+        if self.jaccard_weight:            
             eps = 1e-15
             for cls in range(self.num_classes):
                 jaccard_target = (targets == cls).float()
@@ -55,7 +55,6 @@ class LossMulti:
                 intersection = (jaccard_output * jaccard_target).sum()
 
                 union = jaccard_output.sum() + jaccard_target.sum()
-                loss += (1 - (intersection + eps) / (union - intersection + eps)) * cls_weight
+                loss += (1 - (intersection + eps) / (union - intersection + eps)) * self.jaccard_weight
 
-            loss /= (1 + self.jaccard_weight)
         return loss
