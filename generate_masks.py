@@ -18,17 +18,16 @@ from prepare_data import (original_height,
                           original_width,
                           h_start, w_start
                           )
-
-from transforms import (ImageOnly,
-                        Normalize,
-                        DualCompose)
-
-img_transform = DualCompose([
-    ImageOnly(Normalize())
-])
+from albumentations import Compose, Normalize
 
 
-def get_model(model_path, model_type='unet11', problem_type='binary'):
+def img_transform(p=1):
+    return Compose([
+        Normalize(p=1)
+    ], p=p)
+
+
+def get_model(model_path, model_type='UNet11', problem_type='binary'):
     """
 
     :param model_path:
@@ -66,7 +65,7 @@ def get_model(model_path, model_type='unet11', problem_type='binary'):
     return model
 
 
-def predict(model, from_file_names, batch_size: int, to_path, problem_type):
+def predict(model, from_file_names, batch_size, to_path, problem_type, img_transform):
     loader = DataLoader(
         dataset=RoboticsDataset(from_file_names, transform=img_transform, mode='predict', problem_type=problem_type),
         shuffle=False,
@@ -107,14 +106,14 @@ def predict(model, from_file_names, batch_size: int, to_path, problem_type):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     arg = parser.add_argument
-    arg('--model_path', type=str, default='data/models/unet11_binary_20', help='path to model folder')
-    arg('--model_type', type=str, default='UNet11', help='network architecture',
+    arg('--model_path', type=str, default='data/models/UNet', help='path to model folder')
+    arg('--model_type', type=str, default='UNet', help='network architecture',
         choices=['UNet', 'UNet11', 'UNet16', 'LinkNet34', 'AlbuNet'])
-    arg('--output_path', type=str, help='path to save images', default='.')
+    arg('--output_path', type=str, help='path to save images', default='1')
     arg('--batch-size', type=int, default=4)
-    arg('--fold', type=int, default=0, choices=[0, 1, 2, 3, -1], help='-1: all folds')
-    arg('--problem_type', type=str, default='parts', choices=['binary', 'parts', 'instruments'])
-    arg('--workers', type=int, default=8)
+    arg('--fold', type=int, default=-1, choices=[0, 1, 2, 3, -1], help='-1: all folds')
+    arg('--problem_type', type=str, default='binary', choices=['binary', 'parts', 'instruments'])
+    arg('--workers', type=int, default=12)
 
     args = parser.parse_args()
 
@@ -129,7 +128,8 @@ if __name__ == '__main__':
             output_path = Path(args.output_path)
             output_path.mkdir(exist_ok=True, parents=True)
 
-            predict(model, file_names, args.batch_size, output_path, problem_type=args.problem_type)
+            predict(model, file_names, args.batch_size, output_path, problem_type=args.problem_type,
+                    img_transform=img_transform(p=1))
     else:
         _, file_names = get_split(args.fold)
         model = get_model(str(Path(args.model_path).joinpath('model_{fold}.pt'.format(fold=args.fold))),
@@ -140,4 +140,5 @@ if __name__ == '__main__':
         output_path = Path(args.output_path)
         output_path.mkdir(exist_ok=True, parents=True)
 
-        predict(model, file_names, args.batch_size, output_path, problem_type=args.problem_type)
+        predict(model, file_names, args.batch_size, output_path, problem_type=args.problem_type,
+                img_transform=img_transform(p=1))
