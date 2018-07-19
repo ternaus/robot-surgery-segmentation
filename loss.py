@@ -25,7 +25,7 @@ class LossBinary:
             intersection = (jaccard_output * jaccard_target).sum()
             union = jaccard_output.sum() + jaccard_target.sum()
 
-            loss += (1 - self.jaccard_weight) * (1 - (intersection + eps) / (union - intersection + eps))
+            loss -= self.jaccard_weight * torch.log((intersection + eps) / (union - intersection + eps))
         return loss
 
 
@@ -51,6 +51,5 @@ class LossMulti:
                 intersection = (jaccard_output * jaccard_target).sum()
 
                 union = jaccard_output.sum() + jaccard_target.sum()
-                loss -= (1 - (intersection + eps) / (union - intersection + eps)) * self.jaccard_weight
-
+                loss -= torch.log((intersection + eps) / (union - intersection + eps)) * self.jaccard_weight
         return loss

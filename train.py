@@ -17,17 +17,18 @@ import utils
 
 from prepare_train_val import get_split
 
-from transforms import (DualCompose,
-                        ImageOnly,
-                        Normalize,
-                        HorizontalFlip,
-                        VerticalFlip)
+from albumentations import (
+    HorizontalFlip,
+    VerticalFlip,
+    Normalize,
+    Compose
+)
 
 
 def main():
     parser = argparse.ArgumentParser()
     arg = parser.add_argument
-    arg('--jaccard-weight', default=1, type=float)
+    arg('--jaccard-weight', default=0.5, type=float)
     arg('--device-ids', type=str, default='0', help='For example 0,1 to run on two GPUs')
     arg('--fold', type=int, help='fold', default=0)
     arg('--root', default='runs/debug', help='checkpoint root')
@@ -53,9 +54,9 @@ def main():
     if args.model == 'UNet':
         model = UNet(num_classes=num_classes)
     elif args.model == 'UNet11':
-        model = UNet11(num_classes=num_classes, pretrained='vgg')
+        model = UNet11(num_classes=num_classes, pretrained=True)
     elif args.model == 'UNet16':
-        model = UNet16(num_classes=num_classes, pretrained='vgg')
+        model = UNet16(num_classes=num_classes, pretrained=True)
     elif args.model == 'LinkNet34':
         model = LinkNet34(num_classes=num_classes, pretrained=True)
     elif args.model == 'AlbuNet':
@@ -77,12 +78,12 @@ def main():
 
     cudnn.benchmark = True
 
-    def make_loader(file_names, shuffle=False, transform=None, problem_type='binary'):
+    def make_loader(file_names, shuffle=False, transform=None, problem_type='binary', batch_size=1):
         return DataLoader(
             dataset=RoboticsDataset(file_names, transform=transform, problem_type=problem_type),
             shuffle=shuffle,
             num_workers=args.workers,
-            batch_size=args.batch_size,
+            batch_size=batch_size,
             pin_memory=torch.cuda.is_available()
         )
 
@@ -90,18 +91,22 @@ def main():
 
     print('num train = {}, num_val = {}'.format(len(train_file_names), len(val_file_names)))
 
-    train_transform = DualCompose([
-        HorizontalFlip(),
-        VerticalFlip(),
-        ImageOnly(Normalize())
-    ])
+    def train_transform(p=1):
+        return Compose([
+            VerticalFlip(p=0.5),
+            HorizontalFlip(p=0.5),
+            Normalize(p=1)
+        ], p=p)
 
-    val_transform = DualCompose([
-        ImageOnly(Normalize())
-    ])
+    def val_transform(p=1):
+        return Compose([
+            Normalize(p=1)
+        ], p=p)
 
-    train_loader = make_loader(train_file_names, shuffle=True, transform=train_transform, problem_type=args.type)
-    valid_loader = make_loader(val_file_names, transform=val_transform, problem_type=args.type)
+    train_loader = make_loader(train_file_names, shuffle=True, transform=train_transform(p=1), problem_type=args.type,
+                               batch_size=args.batch_size)
+    valid_loader = make_loader(val_file_names, transform=val_transform(p=1), problem_type=args.type,
+                               batch_size=len(device_ids))
 
     root.joinpath('params.json').write_text(
         json.dumps(vars(args), indent=True, sort_keys=True))

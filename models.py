@@ -40,7 +40,7 @@ class DecoderBlock(nn.Module):
             )
         else:
             self.block = nn.Sequential(
-                nn.Upsample(scale_factor=2, mode='nearest'),
+                nn.Upsample(scale_factor=2, mode='bilinear'),
                 ConvRelu(in_channels, middle_channels),
                 ConvRelu(middle_channels, out_channels),
             )
@@ -56,17 +56,14 @@ class UNet11(nn.Module):
         :param num_filters:
         :param pretrained:
             False - no pre-trained network used
-            vgg - encoder pre-trained with VGG11
+            True - encoder pre-trained with VGG11
         """
         super().__init__()
         self.pool = nn.MaxPool2d(2, 2)
 
         self.num_classes = num_classes
 
-        if pretrained == 'vgg':
-            self.encoder = models.vgg11(pretrained=True).features
-        else:
-            self.encoder = models.vgg11(pretrained=False).features
+        self.encoder = models.vgg11(pretrained=pretrained).features
 
         self.relu = nn.ReLU(inplace=True)
         self.conv1 = nn.Sequential(self.encoder[0],
@@ -133,17 +130,14 @@ class UNet16(nn.Module):
         :param num_filters:
         :param pretrained:
             False - no pre-trained network used
-            vgg - encoder pre-trained with VGG11
+            True - encoder pre-trained with VGG11
         """
         super().__init__()
         self.num_classes = num_classes
 
         self.pool = nn.MaxPool2d(2, 2)
 
-        if pretrained == 'vgg':
-            self.encoder = torchvision.models.vgg16(pretrained=True).features
-        else:
-            self.encoder = torchvision.models.vgg16(pretrained=False).features
+        self.encoder = torchvision.models.vgg16(pretrained=pretrained).features
 
         self.relu = nn.ReLU(inplace=True)
 
