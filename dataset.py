@@ -2,10 +2,7 @@ import torch
 import numpy as np
 import cv2
 from torch.utils.data import Dataset
-from pathlib import Path
 import prepare_data
-
-data_path = Path('data')
 
 
 class RoboticsDataset(Dataset):
