@@ -6,14 +6,7 @@ import random
 import numpy as np
 
 import torch
-from torch.autograd import Variable
 import tqdm
-
-
-def variable(x, volatile=False):
-    if isinstance(x, (list, tuple)):
-        return [variable(y, volatile=volatile) for y in x]
-    return cuda(Variable(x, volatile=volatile))
 
 
 def cuda(x):
@@ -28,7 +21,8 @@ def write_event(log, step: int, **data):
     log.flush()
 
 
-def train(args, model, criterion, train_loader, valid_loader, validation, init_optimizer, n_epochs=None, fold=None, num_classes=None):
+def train(args, model, criterion, train_loader, valid_loader, validation, init_optimizer, n_epochs=None, fold=None,
+          num_classes=None):
     lr = args.lr
     n_epochs = n_epochs or args.n_epochs
     optimizer = init_optimizer(lr)
@@ -64,7 +58,11 @@ def train(args, model, criterion, train_loader, valid_loader, validation, init_o
         try:
             mean_loss = 0
             for i, (inputs, targets) in enumerate(tl):
-                inputs, targets = variable(inputs), variable(targets)
+                inputs = cuda(inputs)
+
+                with torch.no_grad():
+                    targets = cuda(targets)
+
                 outputs = model(inputs)
                 loss = criterion(outputs, targets)
                 optimizer.zero_grad()
@@ -73,7 +71,7 @@ def train(args, model, criterion, train_loader, valid_loader, validation, init_o
                 optimizer.step()
                 step += 1
                 tq.update(batch_size)
-                losses.append(loss.data[0])
+                losses.append(loss.item())
                 mean_loss = np.mean(losses[-report_each:])
                 tq.set_postfix(loss='{:.5f}'.format(mean_loss))
                 if i and i % report_each == 0:

@@ -1,5 +1,3 @@
-torch==0.3.1.post2
+torch==0.4.0
 numpy==1.14.0
-opencv-python==3.3.0.10
 tqdm==4.19.4
-torchvision==0.1.9

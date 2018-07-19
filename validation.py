@@ -1,29 +1,31 @@
 import numpy as np
 import utils
 from torch import nn
+import torch
 
 
 def validation_binary(model: nn.Module, criterion, valid_loader, num_classes=None):
-    model.eval()
-    losses = []
+    with torch.no_grad():
+        model.eval()
+        losses = []
 
-    jaccard = []
+        jaccard = []
 
-    for inputs, targets in valid_loader:
-        inputs = utils.variable(inputs, volatile=True)
-        targets = utils.variable(targets)
-        outputs = model(inputs)
-        loss = criterion(outputs, targets)
-        losses.append(loss.data[0])
-        jaccard += [get_jaccard(targets, (outputs > 0).float()).data[0]]
+        for inputs, targets in valid_loader:
+            inputs = utils.cuda(inputs)
+            targets = utils.cuda(targets)
+            outputs = model(inputs)
+            loss = criterion(outputs, targets)
+            losses.append(loss.item())
+            jaccard += [get_jaccard(targets, (outputs > 0).float()).item()]
 
-    valid_loss = np.mean(losses)  # type: float
+        valid_loss = np.mean(losses)  # type: float
 
-    valid_jaccard = np.mean(jaccard)
+        valid_jaccard = np.mean(jaccard).astype(np.float64)
 
-    print('Valid loss: {:.5f}, jaccard: {:.5f}'.format(valid_loss, valid_jaccard))
-    metrics = {'valid_loss': valid_loss, 'jaccard_loss': valid_jaccard}
-    return metrics
+        print('Valid loss: {:.5f}, jaccard: {:.5f}'.format(valid_loss, valid_jaccard))
+        metrics = {'valid_loss': valid_loss, 'jaccard_loss': valid_jaccard}
+        return metrics
 
 
 def get_jaccard(y_true, y_pred):
@@ -35,38 +37,39 @@ def get_jaccard(y_true, y_pred):
 
 
 def validation_multi(model: nn.Module, criterion, valid_loader, num_classes):
-    model.eval()
-    losses = []
-    confusion_matrix = np.zeros(
-        (num_classes, num_classes), dtype=np.uint32)
-    for inputs, targets in valid_loader:
-        inputs = utils.variable(inputs, volatile=True)
-        targets = utils.variable(targets)
-        outputs = model(inputs)
-        loss = criterion(outputs, targets)
-        losses.append(loss.data[0])
-        output_classes = outputs.data.cpu().numpy().argmax(axis=1)
-        target_classes = targets.data.cpu().numpy()
-        confusion_matrix += calculate_confusion_matrix_from_arrays(
-            output_classes, target_classes, num_classes)
+    with torch.no_grad():
+        model.eval()
+        losses = []
+        confusion_matrix = np.zeros(
+            (num_classes, num_classes), dtype=np.uint32)
+        for inputs, targets in valid_loader:
+            inputs = utils.cuda(inputs)
+            targets = utils.cuda(targets)
+            outputs = model(inputs)
+            loss = criterion(outputs, targets)
+            losses.append(loss.item())
+            output_classes = outputs.data.cpu().numpy().argmax(axis=1)
+            target_classes = targets.data.cpu().numpy()
+            confusion_matrix += calculate_confusion_matrix_from_arrays(
+                output_classes, target_classes, num_classes)
 
-    confusion_matrix = confusion_matrix[1:, 1:]  # exclude background
-    valid_loss = np.mean(losses)  # type: float
-    ious = {'iou_{}'.format(cls + 1): iou
-            for cls, iou in enumerate(calculate_iou(confusion_matrix))}
+        confusion_matrix = confusion_matrix[1:, 1:]  # exclude background
+        valid_loss = np.mean(losses)  # type: float
+        ious = {'iou_{}'.format(cls + 1): iou
+                for cls, iou in enumerate(calculate_iou(confusion_matrix))}
 
-    dices = {'dice_{}'.format(cls + 1): dice
-             for cls, dice in enumerate(calculate_dice(confusion_matrix))}
+        dices = {'dice_{}'.format(cls + 1): dice
+                 for cls, dice in enumerate(calculate_dice(confusion_matrix))}
 
-    average_iou = np.mean(list(ious.values()))
-    average_dices = np.mean(list(dices.values()))
+        average_iou = np.mean(list(ious.values()))
+        average_dices = np.mean(list(dices.values()))
 
-    print(
-        'Valid loss: {:.4f}, average IoU: {:.4f}, average Dice: {:.4f}'.format(valid_loss, average_iou, average_dices))
-    metrics = {'valid_loss': valid_loss, 'iou': average_iou}
-    metrics.update(ious)
-    metrics.update(dices)
-    return metrics
+        print(
+            'Valid loss: {:.4f}, average IoU: {:.4f}, average Dice: {:.4f}'.format(valid_loss, average_iou, average_dices))
+        metrics = {'valid_loss': valid_loss, 'iou': average_iou}
+        metrics.update(ious)
+        metrics.update(dices)
+        return metrics
 
 
 def calculate_confusion_matrix_from_arrays(prediction, ground_truth, nr_labels):

@@ -5,7 +5,7 @@ import argparse
 from prepare_train_val import get_split
 from dataset import RoboticsDataset
 import cv2
-from models import UNet16, LinkNet34, UNet11, UNet
+from models import UNet16, LinkNet34, UNet11, UNet, AlbuNet
 import torch
 from pathlib import Path
 from tqdm import tqdm
@@ -32,7 +32,7 @@ def get_model(model_path, model_type='unet11', problem_type='binary'):
     """
 
     :param model_path:
-    :param model_type: 'UNet', 'UNet16', 'UNet11', 'LinkNet34'
+    :param model_type: 'UNet', 'UNet16', 'UNet11', 'LinkNet34', 'AlbuNet'
     :param problem_type: 'binary', 'parts', 'instruments'
     :return:
     """
@@ -49,6 +49,8 @@ def get_model(model_path, model_type='unet11', problem_type='binary'):
         model = UNet11(num_classes=num_classes)
     elif model_type == 'LinkNet34':
         model = LinkNet34(num_classes=num_classes)
+    elif model_type == 'AlbuNet':
+        model = AlbuNet(num_classes=num_classes)
     elif model_type == 'UNet':
         model = UNet(num_classes=num_classes)
 
@@ -73,32 +75,33 @@ def predict(model, from_file_names, batch_size: int, to_path, problem_type):
         pin_memory=torch.cuda.is_available()
     )
 
-    for batch_num, (inputs, paths) in enumerate(tqdm(loader, desc='Predict')):
-        inputs = utils.variable(inputs, volatile=True)
+    with torch.no_grad():
+        for batch_num, (inputs, paths) in enumerate(tqdm(loader, desc='Predict')):
+            inputs = utils.cuda(inputs)
 
-        outputs = model(inputs)
+            outputs = model(inputs)
 
-        for i, image_name in enumerate(paths):
-            if problem_type == 'binary':
-                factor = prepare_data.binary_factor
-                t_mask = (F.sigmoid(outputs[i, 0]).data.cpu().numpy() * factor).astype(np.uint8)
-            elif problem_type == 'parts':
-                factor = prepare_data.parts_factor
-                t_mask = (outputs[i].data.cpu().numpy().argmax(axis=0) * factor).astype(np.uint8)
-            elif problem_type == 'instruments':
-                factor = prepare_data.instrument_factor
-                t_mask = (outputs[i].data.cpu().numpy().argmax(axis=0) * factor).astype(np.uint8)
+            for i, image_name in enumerate(paths):
+                if problem_type == 'binary':
+                    factor = prepare_data.binary_factor
+                    t_mask = (F.sigmoid(outputs[i, 0]).data.cpu().numpy() * factor).astype(np.uint8)
+                elif problem_type == 'parts':
+                    factor = prepare_data.parts_factor
+                    t_mask = (outputs[i].data.cpu().numpy().argmax(axis=0) * factor).astype(np.uint8)
+                elif problem_type == 'instruments':
+                    factor = prepare_data.instrument_factor
+                    t_mask = (outputs[i].data.cpu().numpy().argmax(axis=0) * factor).astype(np.uint8)
 
-            h, w = t_mask.shape
+                h, w = t_mask.shape
 
-            full_mask = np.zeros((original_height, original_width))
-            full_mask[h_start:h_start + h, w_start:w_start + w] = t_mask
+                full_mask = np.zeros((original_height, original_width))
+                full_mask[h_start:h_start + h, w_start:w_start + w] = t_mask
 
-            instrument_folder = Path(paths[i]).parent.parent.name
+                instrument_folder = Path(paths[i]).parent.parent.name
 
-            (to_path / instrument_folder).mkdir(exist_ok=True, parents=True)
+                (to_path / instrument_folder).mkdir(exist_ok=True, parents=True)
 
-            cv2.imwrite(str(to_path / instrument_folder / (Path(paths[i]).stem + '.png')), full_mask)
+                cv2.imwrite(str(to_path / instrument_folder / (Path(paths[i]).stem + '.png')), full_mask)
 
 
 if __name__ == '__main__':
@@ -106,7 +109,7 @@ if __name__ == '__main__':
     arg = parser.add_argument
     arg('--model_path', type=str, default='data/models/unet11_binary_20', help='path to model folder')
     arg('--model_type', type=str, default='UNet11', help='network architecture',
-        choices=['UNet', 'UNet11', 'UNet16', 'LinkNet34'])
+        choices=['UNet', 'UNet11', 'UNet16', 'LinkNet34', 'AlbuNet'])
     arg('--output_path', type=str, help='path to save images', default='.')
     arg('--batch-size', type=int, default=4)
     arg('--fold', type=int, default=0, choices=[0, 1, 2, 3, -1], help='-1: all folds')

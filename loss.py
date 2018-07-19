@@ -7,11 +7,7 @@ import numpy as np
 
 class LossBinary:
     """
-    Loss defined as BCE - log(soft_jaccard)
-
-    Vladimir Iglovikov, Sergey Mushinskiy, Vladimir Osin,
-    Satellite Imagery Feature Detection using Deep Convolutional Neural Network: A Kaggle Competition
-    arXiv:1706.06169
+    Loss defined as \alpha BCE - (1 - \alpha) SoftJaccard
     """
 
     def __init__(self, jaccard_weight=0):
@@ -19,7 +15,7 @@ class LossBinary:
         self.jaccard_weight = jaccard_weight
 
     def __call__(self, outputs, targets):
-        loss = self.nll_loss(outputs, targets)
+        loss = (1 - self.jaccard_weight) * self.nll_loss(outputs, targets)
 
         if self.jaccard_weight:
             eps = 1e-15
@@ -29,7 +25,7 @@ class LossBinary:
             intersection = (jaccard_output * jaccard_target).sum()
             union = jaccard_output.sum() + jaccard_target.sum()
 
-            loss -= self.jaccard_weight * torch.log((intersection + eps) / (union - intersection + eps))
+            loss += (1 - self.jaccard_weight) * (1 - (intersection + eps) / (union - intersection + eps))
         return loss
 
 
@@ -42,12 +38,12 @@ class LossMulti:
             nll_weight = None
         self.nll_loss = nn.NLLLoss2d(weight=nll_weight)
         self.jaccard_weight = jaccard_weight
-        self.num_classes=num_classes
+        self.num_classes = num_classes
 
     def __call__(self, outputs, targets):
         loss = (1 - self.jaccard_weight) * self.nll_loss(outputs, targets)
-        
-        if self.jaccard_weight:            
+
+        if self.jaccard_weight:
             eps = 1e-15
             for cls in range(self.num_classes):
                 jaccard_target = (targets == cls).float()
@@ -55,6 +51,6 @@ class LossMulti:
                 intersection = (jaccard_output * jaccard_target).sum()
 
                 union = jaccard_output.sum() + jaccard_target.sum()
-                loss += (1 - (intersection + eps) / (union - intersection + eps)) * self.jaccard_weight
+                loss -= (1 - (intersection + eps) / (union - intersection + eps)) * self.jaccard_weight
 
         return loss
