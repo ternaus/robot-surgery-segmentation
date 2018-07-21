@@ -116,8 +116,8 @@ Dependencies
 ------------
 
 * Python 3.6
-* PyTorch 0.3.1
-* TorchVision 0.1.9
+* PyTorch 0.4.0
+* TorchVision 0.2.1
 * numpy 1.14.0
 * opencv-python 3.3.0.10
 * tqdm 4.19.4
@@ -242,10 +242,10 @@ You can easily start working with our models using the demonstration example
 
    &microm
 
-.. |gif1| image:: images/gifs/dataset6/original.gif
-.. |gif2| image:: images/gifs/dataset6/binary.gif
-.. |gif3| image:: images/gifs/dataset6/parts.gif
-.. |gif4| image:: images/gifs/dataset6/types.gif
+.. |gif1| image:: https://habrastorage.org/webt/7d/cy/7v/7dcy7va3ydgdful6-3smoljc_j0.gif
+.. |gif2| image:: https://habrastorage.org/webt/rr/pd/rm/rrpdrmcu7qfs9tdtyac-wvftfzs.gif
+.. |gif3| image:: https://habrastorage.org/webt/hc/w5/hz/hcw5hzd4a2uz4ob8by2u1yet494.gif
+.. |gif4| image:: https://habrastorage.org/webt/0h/_o/fh/0h_ofhvuyewq02kxxo4g5lwikum.gif
 .. |y| image:: images/y.gif
 .. |y_hat| image:: images/y_hat.gif
 .. |i| image:: images/i.gif
