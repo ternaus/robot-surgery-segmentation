@@ -21,6 +21,6 @@ install:
 
 before_script:
   - "flake8 ."
-  
+
 after_success:
   - coveralls

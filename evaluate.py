@@ -66,29 +66,28 @@ if __name__ == '__main__':
 
     if args.problem_type == 'binary':
         for instrument_id in tqdm(range(1, 9)):
+            instrument_dataset_name = 'instrument_dataset_' + str(instrument_id)
+
             for file_name in (
-                            Path(args.train_path) / ('instrument_dataset_' + str(instrument_id)) / 'binary_masks').glob(
-                '*'):
+                    Path(args.train_path) / instrument_dataset_name / 'binary_masks').glob('*'):
                 y_true = (cv2.imread(str(file_name), 0) > 0).astype(np.uint8)
 
-                pred_file_name = Path(args.target_path) / 'binary' / (
-                    'instrument_dataset_' + str(instrument_id)) / file_name.name
+                pred_file_name = (Path(args.target_path) / 'binary' / instrument_dataset_name / file_name.name)
 
-                y_pred = (cv2.imread(str(pred_file_name), 0) > 255 * 0.5).astype(np.uint8)[h_start:h_start + height,
-                         w_start:w_start + width]
+                pred_image = (cv2.imread(str(pred_file_name), 0) > 255 * 0.5).astype(np.uint8)
+                y_pred = pred_image[h_start:h_start + height, w_start:w_start + width]
 
                 result_dice += [dice(y_true, y_pred)]
                 result_jaccard += [jaccard(y_true, y_pred)]
 
     elif args.problem_type == 'parts':
         for instrument_id in tqdm(range(1, 9)):
+            instrument_dataset_name = 'instrument_dataset_' + str(instrument_id)
             for file_name in (
-                            Path(args.train_path) / ('instrument_dataset_' + str(instrument_id)) / 'parts_masks').glob(
-                '*'):
+                    Path(args.train_path) / instrument_dataset_name / 'parts_masks').glob('*'):
                 y_true = cv2.imread(str(file_name), 0)
 
-                pred_file_name = Path(args.target_path) / 'parts' / (
-                    'instrument_dataset_' + str(instrument_id)) / file_name.name
+                pred_file_name = Path(args.target_path) / 'parts' / instrument_dataset_name / file_name.name
 
                 y_pred = cv2.imread(str(pred_file_name), 0)[h_start:h_start + height, w_start:w_start + width]
 
@@ -97,14 +96,12 @@ if __name__ == '__main__':
 
     elif args.problem_type == 'instruments':
         for instrument_id in tqdm(range(1, 9)):
+            instrument_dataset_name = 'instrument_dataset_' + str(instrument_id)
             for file_name in (
-                            Path(args.train_path) / (
-                                    'instrument_dataset_' + str(instrument_id)) / 'instruments_masks').glob(
-                '*'):
+                    Path(args.train_path) / instrument_dataset_name / 'instruments_masks').glob('*'):
                 y_true = cv2.imread(str(file_name), 0)
 
-                pred_file_name = Path(args.target_path) / 'instruments' / (
-                    'instrument_dataset_' + str(instrument_id)) / file_name.name
+                pred_file_name = Path(args.target_path) / 'instruments' / instrument_dataset_name / file_name.name
 
                 y_pred = cv2.imread(str(pred_file_name), 0)[h_start:h_start + height, w_start:w_start + width]
 

@@ -65,7 +65,9 @@ def validation_multi(model: nn.Module, criterion, valid_loader, num_classes):
         average_dices = np.mean(list(dices.values()))
 
         print(
-            'Valid loss: {:.4f}, average IoU: {:.4f}, average Dice: {:.4f}'.format(valid_loss, average_iou, average_dices))
+            'Valid loss: {:.4f}, average IoU: {:.4f}, average Dice: {:.4f}'.format(valid_loss,
+                                                                                   average_iou,
+                                                                                   average_dices))
         metrics = {'valid_loss': valid_loss, 'iou': average_iou}
         metrics.update(ious)
         metrics.update(dices)
