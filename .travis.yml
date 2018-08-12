@@ -17,7 +17,7 @@ matrix:
 install:
   - "pip install flake8"
 
-before_script:
+script:
   - "flake8 ."
 
 after_success:
