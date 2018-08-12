@@ -4,7 +4,7 @@ from torch import nn
 import torch
 
 
-def validation_binary(model: nn.Module, criterion, valid_loader, num_classes=None):
+def validation_binary(model, criterion, valid_loader, num_classes=None):
     with torch.no_grad():
         model.eval()
         losses = []

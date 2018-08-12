@@ -11,7 +11,7 @@ def conv3x3(in_, out):
 
 class ConvRelu(nn.Module):
     def __init__(self, in_: int, out: int):
-        super().__init__()
+        super(ConvRelu, self).__init__()
         self.conv = conv3x3(in_, out)
         self.activation = nn.ReLU(inplace=True)
 

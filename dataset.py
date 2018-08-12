@@ -7,7 +7,7 @@ from albumentations.torch.functional import img_to_tensor
 
 
 class RoboticsDataset(Dataset):
-    def __init__(self, file_names: list, to_augment=False, transform=None, mode='train', problem_type=None):
+    def __init__(self, file_names, to_augment=False, transform=None, mode='train', problem_type=None):
         self.file_names = file_names
         self.to_augment = to_augment
         self.transform = transform
