@@ -17,12 +17,9 @@ matrix:
       env: TEST_MODE=PEP8
 
 install:
-  - pip install .[tests]
-  - pip install pycodestyle
+  - pip install flakes8
 
 script:
-  - if [[ "$TEST_MODE" == "PEP8" ]]; then
-      pycodestyle . --max-line-length 119 --ignore=E402;
-    else
-      pytest;
-    fi
+  - flake8
+after_success:
+  - coveralls
