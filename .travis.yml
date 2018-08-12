@@ -17,9 +17,10 @@ matrix:
       env: TEST_MODE=PEP8
 
 install:
-  - pip install flakes8
+  - "pip install flake8"
 
-script:
-  - flake8
+before_script:
+  - "flake8 ."
+  
 after_success:
   - coveralls
