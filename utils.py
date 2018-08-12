@@ -13,7 +13,7 @@ def cuda(x):
     return x.cuda(async=True) if torch.cuda.is_available() else x
 
 
-def write_event(log, step: int, **data):
+def write_event(log, step, **data):
     data['step'] = step
     data['dt'] = datetime.now().isoformat()
     log.write(json.dumps(data, sort_keys=True))
