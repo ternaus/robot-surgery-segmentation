@@ -70,6 +70,8 @@ def main():
         else:
             device_ids = None
         model = nn.DataParallel(model, device_ids=device_ids).cuda()
+    else:
+        raise SystemError('GPU device not found')
 
     if args.type == 'binary':
         loss = LossBinary(jaccard_weight=args.jaccard_weight)
