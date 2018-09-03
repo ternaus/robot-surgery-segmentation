@@ -14,15 +14,24 @@ from models import UNet11, LinkNet34, UNet, UNet16, AlbuNet
 from loss import LossBinary, LossMulti
 from dataset import RoboticsDataset
 import utils
-
+import sys
 from prepare_train_val import get_split
 
 from albumentations import (
     HorizontalFlip,
     VerticalFlip,
     Normalize,
-    Compose
+    Compose,
+    PadIfNeeded,
+    RandomCrop,
+    CenterCrop
 )
+
+moddel_list = {'UNet11': UNet11,
+               'UNet16': UNet16,
+               'UNet': UNet,
+               'AlbuNet': AlbuNet,
+               'LinkNet34': LinkNet34}
 
 
 def main():
@@ -36,13 +45,29 @@ def main():
     arg('--n-epochs', type=int, default=100)
     arg('--lr', type=float, default=0.0001)
     arg('--workers', type=int, default=12)
+    arg('--train_crop_height', type=int, default=1024)
+    arg('--train_crop_width', type=int, default=1280)
+    arg('--val_crop_height', type=int, default=1024)
+    arg('--val_crop_width', type=int, default=1280)
     arg('--type', type=str, default='binary', choices=['binary', 'parts', 'instruments'])
-    arg('--model', type=str, default='UNet', choices=['UNet', 'UNet11', 'LinkNet34', 'AlbuNet'])
+    arg('--model', type=str, default='UNet', choices=moddel_list.keys())
 
     args = parser.parse_args()
 
     root = Path(args.root)
     root.mkdir(exist_ok=True, parents=True)
+
+    if not utils.check_crop_size(args.train_crop_height, args.train_crop_width):
+        print('Input image sizes should be divisible by 32, but train '
+              'crop sizes ({train_crop_height} and {train_crop_width}) '
+              'are not.'.format(train_crop_height=args.train_crop_height, train_crop_width=args.train_crop_width))
+        sys.exit(0)
+
+    if not utils.check_crop_size(args.val_crop_height, args.val_crop_width):
+        print('Input image sizes should be divisible by 32, but validation '
+              'crop sizes ({val_crop_height} and {val_crop_width}) '
+              'are not.'.format(val_crop_height=args.val_crop_height, val_crop_width=args.val_crop_width))
+        sys.exit(0)
 
     if args.type == 'parts':
         num_classes = 4
@@ -53,16 +78,9 @@ def main():
 
     if args.model == 'UNet':
         model = UNet(num_classes=num_classes)
-    elif args.model == 'UNet11':
-        model = UNet11(num_classes=num_classes, pretrained=True)
-    elif args.model == 'UNet16':
-        model = UNet16(num_classes=num_classes, pretrained=True)
-    elif args.model == 'LinkNet34':
-        model = LinkNet34(num_classes=num_classes, pretrained=True)
-    elif args.model == 'AlbuNet':
-        model = AlbuNet(num_classes=num_classes, pretrained=True)
     else:
-        model = UNet(num_classes=num_classes, input_channels=3)
+        model_name = moddel_list[args.model]
+        model = model_name(num_classes=num_classes, pretrained=True)
 
     if torch.cuda.is_available():
         if args.device_ids:
@@ -95,6 +113,8 @@ def main():
 
     def train_transform(p=1):
         return Compose([
+            PadIfNeeded(min_height=args.train_crop_height, min_width=args.train_crop_width, p=1),
+            RandomCrop(height=args.train_crop_height, width=args.train_crop_width, p=1),
             VerticalFlip(p=0.5),
             HorizontalFlip(p=0.5),
             Normalize(p=1)
@@ -102,6 +122,8 @@ def main():
 
     def val_transform(p=1):
         return Compose([
+            PadIfNeeded(min_height=args.val_crop_height, min_width=args.val_crop_width, p=1),
+            CenterCrop(height=args.val_crop_height, width=args.val_crop_width, p=1),
             Normalize(p=1)
         ], p=p)
 

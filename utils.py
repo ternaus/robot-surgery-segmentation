@@ -21,6 +21,20 @@ def write_event(log, step, **data):
     log.flush()
 
 
+def check_crop_size(image_height, image_width):
+    """Checks if image size divisible by 32.
+
+    Args:
+        image_height:
+        image_width:
+
+    Returns:
+        True if both height and width divisible by 32 and False otherwise.
+
+    """
+    return image_height % 32 == 0 and image_width % 32 == 0
+
+
 def train(args, model, criterion, train_loader, valid_loader, validation, init_optimizer, n_epochs=None, fold=None,
           num_classes=None):
     lr = args.lr
