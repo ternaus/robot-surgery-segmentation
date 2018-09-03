@@ -58,16 +58,15 @@ def main():
     root.mkdir(exist_ok=True, parents=True)
 
     if not utils.check_crop_size(args.train_crop_height, args.train_crop_width):
-        print('Input image sizes should be divisible by 32, but train crop sizes ({train_crop_height} '
-                             'and {train_crop_width}) are not.'.format(train_crop_height=args.train_crop_height,
-                                                                       train_crop_width=args.train_crop_width))
+        print('Input image sizes should be divisible by 32, but train '
+              'crop sizes ({train_crop_height} and {train_crop_width}) '
+              'are not.'.format(train_crop_height=args.train_crop_height, train_crop_width=args.train_crop_width))
         sys.exit(0)
 
     if not utils.check_crop_size(args.val_crop_height, args.val_crop_width):
         print('Input image sizes should be divisible by 32, but validation '
-                             'crop sizes ({val_crop_height} '
-                             'and {val_crop_width}) are not.'.format(val_crop_height=args.val_crop_height,
-                                                                     val_crop_width=args.val_crop_width))
+              'crop sizes ({val_crop_height} and {val_crop_width}) '
+              'are not.'.format(val_crop_height=args.val_crop_height, val_crop_width=args.val_crop_width))
         sys.exit(0)
 
     if args.type == 'parts':
