@@ -17,7 +17,7 @@ def validation_binary(model, criterion, valid_loader, num_classes=None):
             outputs = model(inputs)
             loss = criterion(outputs, targets)
             losses.append(loss.item())
-            jaccard += [get_jaccard(targets, (outputs > 0).float()).item()]
+            jaccard += get_jaccard(targets, (outputs > 0).float())
 
         valid_loss = np.mean(losses)  # type: float
 
@@ -33,7 +33,7 @@ def get_jaccard(y_true, y_pred):
     intersection = (y_pred * y_true).sum(dim=-2).sum(dim=-1)
     union = y_true.sum(dim=-2).sum(dim=-1) + y_pred.sum(dim=-2).sum(dim=-1)
 
-    return (intersection / (union - intersection + epsilon)).mean()
+    return list(((intersection + epsilon) / (union - intersection + epsilon)).data.cpu().numpy())
 
 
 def validation_multi(model: nn.Module, criterion, valid_loader, num_classes):
