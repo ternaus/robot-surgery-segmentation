@@ -17,10 +17,11 @@ Citation
 
 If you find this work useful for your publications, please consider citing::
 
-    @article{shvets2018automatic,
-    title={Automatic Instrument Segmentation in Robot-Assisted Surgery Using Deep Learning},
-    author={Shvets, Alexey and Rakhlin, Alexander and Kalinin, Alexandr A and Iglovikov, Vladimir},
-    journal={arXiv preprint arXiv:1803.01207},
+    @inproceedings{shvets2018automatic,
+    title={Automatic Instrument Segmentation in Robot-Assisted Surgery using Deep Learning},
+    author={Shvets, Alexey A and Rakhlin, Alexander and Kalinin, Alexandr A and Iglovikov, Vladimir I}},
+    booktitle={2018 17th IEEE International Conference on Machine Learning and Applications (ICMLA)},
+    pages={624--628},
     year={2018}
     }
 
