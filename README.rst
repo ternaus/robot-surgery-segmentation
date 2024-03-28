@@ -159,7 +159,7 @@ The training dataset contains only 8 videos with 255 frames each. Inside each vi
 
 1. Preprocessing
 ~~~~~~~~~~~~~~~~~~~~~~
-As a preprocessing step we cropped black unindormative border from all frames with a file ``prepare_data.py`` that creates folder ``data/cropped_train.py`` with masks and images of the smaller size that are used for training. Then, to split the dataset for 4-fold cross-validation one can use the file: ``prepare_train_val``.
+As a preprocessing step we cropped black unindormative border from all frames with a file ``prepare_data.py`` that creates folder ``data/cropped_train`` with masks and images of the smaller size that are used for training. Then, to split the dataset for 4-fold cross-validation one can use the file: ``prepare_train_val``.
 
 
 2. Training
